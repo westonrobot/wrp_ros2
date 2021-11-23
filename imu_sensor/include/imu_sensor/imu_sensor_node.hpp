@@ -1,0 +1,5 @@
+#ifndef IMU_SENSOR_NODE_HPP
+#define IMU_SENSOR_NODE_HPP
+
+
+#endif /* IMU_SENSOR_NODE_HPP */

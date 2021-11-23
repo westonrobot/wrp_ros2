@@ -1,0 +1,5 @@
+#ifndef GPS_RECEIVER_NODE_HPP
+#define GPS_RECEIVER_NODE_HPP
+
+
+#endif /* GPS_RECEIVER_NODE_HPP */
