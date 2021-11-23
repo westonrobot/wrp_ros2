@@ -15,11 +15,49 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/weston_robot/lib/cmake")
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(wrp_zbus REQUIRED)
+find_package(wrp_sdk REQUIRED)
+
+include_directories(
+  include
+)
+
+add_executable(gps_receiver_node
+  src/gps_receiver_node.cpp
+  src/gps_receiver_main.cpp
+)
+
+target_link_libraries(gps_receiver_node
+  westonrobot::wrp_sdk
+  westonrobot::wrp_zbus
+)
+
+ament_target_dependencies(gps_receiver_node
+  rclcpp
+  sensor_msgs
+  std_msgs
+)
+
+install(TARGETS gps_receiver_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
