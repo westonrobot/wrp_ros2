@@ -40,6 +40,7 @@ bool ImuSensorNode::ReadParameters() {
   this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
   this->declare_parameter<int>("publish_interval", 500);
   this->declare_parameter<int>("baud_rate", 115200);
+  this->declare_parameter<std::string>("frame_id", "imu");
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
@@ -54,6 +55,9 @@ bool ImuSensorNode::ReadParameters() {
   this->get_parameter("baud_rate", baud_rate_);
   RCLCPP_INFO_STREAM(this->get_logger(), "baud_rate: " << baud_rate_);
 
+  this->get_parameter("frame_id", frame_id_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "frame_id: " << frame_id_);
+
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   return true;
@@ -63,6 +67,7 @@ void ImuSensorNode::PublishCallback() {
   if (imu_->IsOkay()) {
     auto data = imu_->GetImuMessage();
     imu_data_.header.stamp = this->get_clock()->now();
+    imu_data_.header.frame_id = frame_id_;
     imu_data_.orientation.x = data.orientation.q0;
     imu_data_.orientation.y = data.orientation.q1;
     imu_data_.orientation.z = data.orientation.q2;

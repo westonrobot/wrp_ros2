@@ -4,7 +4,7 @@
  * Created on Tue Nov 23 2021 16:19:12
  *
  * Description:
- *   
+ *
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #ifndef IMU_SENSOR_NODE_HPP
@@ -24,33 +24,32 @@
 // ROS Messages
 #include "sensor_msgs/msg/imu.hpp"
 
-namespace imu_sensor
-{
-  using namespace westonrobot;
-  class ImuSensorNode : public rclcpp::Node {
-   public:
-    ImuSensorNode();
-    ~ImuSensorNode();
-  
-   private:
-    // ----- ROS Node Parameters -----
-    std::string device_path_;
-    int publish_interval_;
-    int baud_rate_;
-    // ----- Internal Variables -----
-    std::unique_ptr<ImuSensor> imu_;
-    // ----- Published Messages-----
-    sensor_msgs::msg::Imu imu_data_;
-    // ----- Subscribers & Publishers -----
-    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
-    // ----- Timers -----
-    rclcpp::TimerBase::SharedPtr loop_timer_;
-    // ----- Callbacks -----
-    void PublishCallback();
-  
-    bool ReadParameters();
-  };
-} // namespace imu_sensor
+namespace imu_sensor {
+using namespace westonrobot;
+class ImuSensorNode : public rclcpp::Node {
+ public:
+  ImuSensorNode();
+  ~ImuSensorNode();
 
+ private:
+  // ----- ROS Node Parameters -----
+  std::string device_path_;
+  int publish_interval_;
+  int baud_rate_;
+  std::string frame_id_;
+  // ----- Internal Variables -----
+  std::unique_ptr<ImuSensor> imu_;
+  // ----- Published Messages-----
+  sensor_msgs::msg::Imu imu_data_;
+  // ----- Subscribers & Publishers -----
+  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
+  // ----- Timers -----
+  rclcpp::TimerBase::SharedPtr loop_timer_;
+  // ----- Callbacks -----
+  void PublishCallback();
+
+  bool ReadParameters();
+};
+}  // namespace imu_sensor
 
 #endif /* IMU_SENSOR_NODE_HPP */

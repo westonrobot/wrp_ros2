@@ -38,6 +38,7 @@ class GpsReceiverNode : public rclcpp::Node {
   std::string device_path_;
   int publish_interval_;
   int baud_rate_;
+  std::string frame_id_;
   // ----- Internal Variables -----
   std::unique_ptr<GpsReceiver> receiver_;
   // ----- Published Messages-----

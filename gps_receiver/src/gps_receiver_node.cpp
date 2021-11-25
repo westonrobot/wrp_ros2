@@ -42,6 +42,7 @@ bool GpsReceiverNode::ReadParameters() {
   this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
   this->declare_parameter<int>("publish_interval", 500);
   this->declare_parameter<int>("baud_rate", 115200);
+  this->declare_parameter<std::string>("frame_id", "gps");
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
@@ -56,6 +57,9 @@ bool GpsReceiverNode::ReadParameters() {
   this->get_parameter("baud_rate", baud_rate_);
   RCLCPP_INFO_STREAM(this->get_logger(), "baud_rate: " << baud_rate_);
 
+  this->get_parameter("frame_id", frame_id_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "frame_id: " << frame_id_);
+
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   return true;
@@ -65,6 +69,7 @@ void GpsReceiverNode::PublishCallback() {
   auto gps_fix = receiver_->GetFixData();
 
   sat_fix_.header.stamp = this->get_clock()->now();
+  sat_fix_.header.frame_id = frame_id_;
   sat_fix_.status.status = gps_fix.status.status;
   sat_fix_.status.service = gps_fix.status.service;
   sat_fix_.latitude = gps_fix.latitude;
