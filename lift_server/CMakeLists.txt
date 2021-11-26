@@ -18,41 +18,39 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(sdk_interfaces REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(wrp_zbus REQUIRED)
 find_package(wrp_sdk REQUIRED)
 
-include_directories(
-  include
-)
-
 add_library(lift_server SHARED
   src/lift_server_node.cpp
-  # src/lift_server_main.cpp
 )
 
+target_include_directories(lift_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 target_compile_definitions(lift_server
   PRIVATE "LIFT_ACTION_SERVER_DLL")
-
 target_link_libraries(lift_server
   westonrobot::wrp_sdk
   westonrobot::wrp_zbus
 )
-
 ament_target_dependencies(lift_server
   rclcpp
   rclcpp_action
   rclcpp_components
   sdk_interfaces
+  std_msgs
 )
-
 rclcpp_components_register_node(lift_server PLUGIN "lift_server::LiftServerNode" EXECUTABLE lift_server_node)
 
 install(TARGETS lift_server
-  DESTINATION lib/${PROJECT_NAME}
-)
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
 install(DIRECTORY
   launch

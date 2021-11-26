@@ -25,7 +25,7 @@ namespace lift_server {
 using namespace westonrobot;
 class LiftServerNode : public rclcpp::Node {
  public:
-  LiftServerNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
+  explicit LiftServerNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
   ~LiftServerNode();
 
   using LiftGoal = sdk_interfaces::action::LiftGoal;
@@ -37,7 +37,7 @@ class LiftServerNode : public rclcpp::Node {
   int baud_rate_;
   // ----- Internal Variables -----
   std::unique_ptr<CameraLift> lift_;
-  rclcpp_action::Server<LiftGoal>::SharedPtr goal_server_;
+  rclcpp_action::Server<LiftGoal>::SharedPtr action_server_;
   // ----- Published Messages-----
   // ----- Subscribers & Publishers -----
   // rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr sub_;
@@ -60,5 +60,4 @@ class LiftServerNode : public rclcpp::Node {
 };
 }  // namespace lift_server
 
-RCLCPP_COMPONENTS_REGISTER_NODE(lift_server::LiftServerNode)
 #endif /* LIFT_SERVER_NODE_HPP */

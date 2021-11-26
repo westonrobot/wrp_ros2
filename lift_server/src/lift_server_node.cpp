@@ -13,8 +13,7 @@ using namespace std::placeholders;
 namespace lift_server {
 using namespace westonrobot;
 
-LiftServerNode::LiftServerNode(
-    const rclcpp::NodeOptions& options)
+LiftServerNode::LiftServerNode(const rclcpp::NodeOptions& options)
     : Node("lift_server_node", options) {
   if (!LiftServerNode::ReadParameters()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Could not load parameters");
@@ -28,12 +27,14 @@ LiftServerNode::LiftServerNode(
     rclcpp::shutdown();
   }
 
-  goal_server_ = rclcpp_action::create_server<LiftGoal>(
+  action_server_ = rclcpp_action::create_server<LiftGoal>(
       this, "lift_position_control",
       std::bind(&LiftServerNode::HandleGoal, this, _1, _2),
       std::bind(&LiftServerNode::HandleCancel, this, _1),
       std::bind(&LiftServerNode::HandleAccepted, this, _1));
 }
+
+LiftServerNode::~LiftServerNode() {}
 
 bool LiftServerNode::ReadParameters() {
   // Declare default parameters
@@ -84,3 +85,5 @@ void LiftServerNode::GoalCallback(
 }
 
 }  // namespace lift_server
+
+RCLCPP_COMPONENTS_REGISTER_NODE(lift_server::LiftServerNode)
