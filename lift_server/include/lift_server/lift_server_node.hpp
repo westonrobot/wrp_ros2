@@ -19,7 +19,7 @@
 // interfaces
 #include "sdk_interfaces/msg/lift_state.hpp"
 #include "sdk_interfaces/action/lift_goal.hpp"
-#include "std_msgs/msg/u_int16.hpp"
+#include "std_msgs/msg/int8.hpp"
 
 namespace lift_server {
 using namespace westonrobot;
@@ -35,27 +35,29 @@ class LiftServerNode : public rclcpp::Node {
   // ----- ROS Node Parameters -----
   std::string port_name_;
   int baud_rate_;
+  int publish_interval_;
+  bool command_preemption_;
   // ----- Internal Variables -----
   std::unique_ptr<CameraLift> lift_;
   rclcpp_action::Server<LiftGoal>::SharedPtr action_server_;
+  bool position_control_active_ = true;
   // ----- Published Messages-----
+  sdk_interfaces::msg::LiftState lift_state_;
   // ----- Subscribers & Publishers -----
-  // rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr sub_;
-  // rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_;
+  rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr speed_control_sub_;
+  rclcpp::Publisher<sdk_interfaces::msg::LiftState>::SharedPtr state_pub_;
   // ----- Timers -----
-  // rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::TimerBase::SharedPtr timer_;
   // ----- Callbacks -----
-  // void Callback(const std_msgs::msg::Empty::SharedPtr msg);
   rclcpp_action::GoalResponse HandleGoal(
       const rclcpp_action::GoalUUID& uuid,
       std::shared_ptr<const LiftGoal::Goal> goal);
-
   rclcpp_action::CancelResponse HandleCancel(
       const std::shared_ptr<GoalHandleLiftGoal> goal_handle);
-
   void HandleAccepted(const std::shared_ptr<GoalHandleLiftGoal> goal_handle);
-
   void GoalCallback(const std::shared_ptr<GoalHandleLiftGoal> goal_handle);
+  void SpeedCmdCallback(const std_msgs::msg::Int8::SharedPtr speed);
+  void PublishStateCallback();
   bool ReadParameters();
 };
 }  // namespace lift_server

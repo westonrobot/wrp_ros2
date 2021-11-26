@@ -1,4 +1,5 @@
 lift_server_node:
   ros__parameters:
-    port_name: "/dev/ttyUSB0"
+    port_name: "/dev/ttyUSB0" # uart port interface to lift
     baud_rate: 115200
+    command_preemption: true # if speed cmd can override an active goal cmd
