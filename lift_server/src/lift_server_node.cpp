@@ -13,7 +13,9 @@ using namespace std::placeholders;
 namespace lift_server {
 using namespace westonrobot;
 
-LiftServerNode::LiftServerNode() : Node("lift_server_node") {
+LiftServerNode::LiftServerNode(
+    const rclcpp::NodeOptions& options)
+    : Node("lift_server_node", options) {
   if (!LiftServerNode::ReadParameters()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Could not load parameters");
     rclcpp::shutdown();

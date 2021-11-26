@@ -25,7 +25,7 @@ namespace lift_server {
 using namespace westonrobot;
 class LiftServerNode : public rclcpp::Node {
  public:
-  LiftServerNode();
+  LiftServerNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
   ~LiftServerNode();
 
   using LiftGoal = sdk_interfaces::action::LiftGoal;
@@ -60,4 +60,5 @@ class LiftServerNode : public rclcpp::Node {
 };
 }  // namespace lift_server
 
+RCLCPP_COMPONENTS_REGISTER_NODE(lift_server::LiftServerNode)
 #endif /* LIFT_SERVER_NODE_HPP */
