@@ -17,6 +17,8 @@ Wrapper around wrp_sdk's gps_receiver
             * data publish rate in milliseconds.
         * baud_rate (int, default: 115200)
             * receiver's communication baud rate
+        * frame_id (string, default: "gps")
+            * Frame id to be used in navasat_fix's header
 
 ## Configuration
 

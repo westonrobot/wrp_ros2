@@ -33,7 +33,7 @@ class LiftServerNode : public rclcpp::Node {
 
  private:
   // ----- ROS Node Parameters -----
-  std::string port_name_;
+  std::string device_path_;
   int baud_rate_;
   int publish_interval_;
   bool command_preemption_;

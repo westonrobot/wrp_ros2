@@ -22,7 +22,7 @@ LiftServerNode::LiftServerNode(const rclcpp::NodeOptions& options)
 
   lift_ = std::make_unique<CameraLift>();
 
-  if (!lift_->Connect(port_name_, baud_rate_)) {
+  if (!lift_->Connect(device_path_, baud_rate_)) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Could not setup lift!!!");
     rclcpp::shutdown();
   }
@@ -49,7 +49,7 @@ LiftServerNode::~LiftServerNode() {}
 
 bool LiftServerNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("port_name", "/dev/ttyUSB0");
+  this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<int>("publish_interval", 500);
   this->declare_parameter<bool>("command_preemption", true);
@@ -57,21 +57,19 @@ bool LiftServerNode::ReadParameters() {
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
 
-  this->get_parameter("port_name", port_name_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "port_name: " << port_name_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
+  this->get_parameter("device_path", device_path_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "device_path: " << device_path_);
 
   this->get_parameter("baud_rate", baud_rate_);
   RCLCPP_INFO_STREAM(this->get_logger(), "baud_rate: " << baud_rate_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   this->get_parameter("publish_interval", publish_interval_);
   RCLCPP_INFO_STREAM(this->get_logger(), "publish_interval: " << publish_interval_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   this->get_parameter("command_preemption", command_preemption_);
   RCLCPP_INFO_STREAM(this->get_logger(),
                      "command_preemption: " << command_preemption_);
+                     
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   return true;

@@ -17,6 +17,8 @@ Wrapper around wrp_sdk's imu_sensor
             * data publish rate in milliseconds.
         * baud_rate (int, default: 115200)
             * receiver's communication baud rate
+        *  frame_id (string, default: "imu")
+            * Frame id to be used in imu's header
 
 ## Configuration
 

@@ -6,6 +6,7 @@ This contains minimal packages to drive peripherals in wrp_sdk
 
 * gps_receiver: a ROS2 wrapper around wrp_sdk's gps_receiver
 * imu_sensor: a ROS2 wrapper around wrp_sdk's imu_sensor
+* lift_server: a ROS2 wrapper around wrp_sdk's camera_lift
 
 More details in the individual packages
 
@@ -35,4 +36,10 @@ More details in the individual packages
 
         ````bash
         ros2 launch imu_sensor imu_sensor_launch.py 
+        ````
+
+    3. Lift Action Server Node
+
+        ````bash
+        ros2 launch lift_server lift_server_launch.py 
         ````
