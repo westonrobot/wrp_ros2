@@ -66,18 +66,19 @@ bool GpsReceiverNode::ReadParameters() {
 }
 
 void GpsReceiverNode::PublishCallback() {
-  auto gps_fix = receiver_->GetFixData();
+  if (receiver_->IsOkay()) {
+    auto gps_fix = receiver_->GetFixData();
 
-  sat_fix_.header.stamp = this->get_clock()->now();
-  sat_fix_.header.frame_id = frame_id_;
-  sat_fix_.status.status = gps_fix.status.status;
-  sat_fix_.status.service = gps_fix.status.service;
-  sat_fix_.latitude = gps_fix.latitude;
-  sat_fix_.longitude = gps_fix.longitude;
-  sat_fix_.altitude = gps_fix.altitude;
-  sat_fix_.position_covariance = gps_fix.position_covariance;
-
-  pub_->publish(sat_fix_);
+    sat_fix_.header.stamp = this->get_clock()->now();
+    sat_fix_.header.frame_id = frame_id_;
+    sat_fix_.status.status = gps_fix.status.status;
+    sat_fix_.status.service = gps_fix.status.service;
+    sat_fix_.latitude = gps_fix.latitude;
+    sat_fix_.longitude = gps_fix.longitude;
+    sat_fix_.altitude = gps_fix.altitude;
+    sat_fix_.position_covariance = gps_fix.position_covariance;
+    pub_->publish(sat_fix_);
+  }
 }
 
 }  // namespace gps_receiver
