@@ -4,9 +4,10 @@
 
 This contains minimal packages to drive peripherals in wrp_sdk
 
-* gps_receiver: a ROS2 wrapper around wrp_sdk's gps_receiver
-* imu_sensor: a ROS2 wrapper around wrp_sdk's imu_sensor
-* lift_server: a ROS2 wrapper around wrp_sdk's camera_lift
+* sdk_intefaces: interface definitions for the wrappers.
+* gps_receiver: a ROS2 wrapper around wrp_sdk's gps_receiver.
+* imu_sensor: a ROS2 wrapper around wrp_sdk's imu_sensor.
+* lift_server: a ROS2 wrapper around wrp_sdk's camera_lift.
 
 More details in the individual packages
 
