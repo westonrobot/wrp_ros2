@@ -8,7 +8,7 @@ Wrapper around wrp_sdk's camera_lift
 
 1. phoenix_base_node
     * Published topics
-        * /lift_server/state (sdk_interfaces::msg::LiftState)  
+        * /lift_server/state (wrp_ros2::msg::LiftState)  
             * Outputs the lift's current state data.
     * Subscribed topics
         * /lift_server/speed_cmd (std_msgs::msg::Int8)

@@ -1,14 +1,14 @@
 /**
- * imu_sensor_node.hpp
+ * gps_receiver_node.hpp
  *
- * Created on Tue Nov 23 2021 16:19:12
+ * Created on Tue Nov 23 2021 13:43:06
  *
  * Description:
  *
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
-#ifndef IMU_SENSOR_NODE_HPP
-#define IMU_SENSOR_NODE_HPP
+#ifndef GPS_RECEIVER_NODE_HPP
+#define GPS_RECEIVER_NODE_HPP
 
 // C++
 #include <string>
@@ -19,17 +19,19 @@
 #include "rclcpp/time.hpp"
 
 // wrp_sdk
-#include "wrp_sdk/peripheral/imu_sensor.hpp"
+#include "wrp_sdk/peripheral/gps_receiver.hpp"
 
 // ROS Messages
-#include "sensor_msgs/msg/imu.hpp"
+#include "sensor_msgs/msg/nav_sat_fix.hpp"
+#include "sensor_msgs/msg/nav_sat_status.hpp"
 
-namespace imu_sensor {
+namespace wrp_ros2 {
 using namespace westonrobot;
-class ImuSensorNode : public rclcpp::Node {
+
+class GpsReceiverNode : public rclcpp::Node {
  public:
-  ImuSensorNode();
-  ~ImuSensorNode();
+  GpsReceiverNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
+  ~GpsReceiverNode();
 
  private:
   // ----- ROS Node Parameters -----
@@ -38,11 +40,11 @@ class ImuSensorNode : public rclcpp::Node {
   int baud_rate_;
   std::string frame_id_;
   // ----- Internal Variables -----
-  std::unique_ptr<ImuSensor> imu_;
+  std::unique_ptr<GpsReceiver> receiver_;
   // ----- Published Messages-----
-  sensor_msgs::msg::Imu imu_data_;
+  sensor_msgs::msg::NavSatFix sat_fix_;
   // ----- Subscribers & Publishers -----
-  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
+  rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr pub_;
   // ----- Timers -----
   rclcpp::TimerBase::SharedPtr loop_timer_;
   // ----- Callbacks -----
@@ -50,6 +52,7 @@ class ImuSensorNode : public rclcpp::Node {
 
   bool ReadParameters();
 };
-}  // namespace imu_sensor
 
-#endif /* IMU_SENSOR_NODE_HPP */
+}  // namespace wrp_ros2
+
+#endif /* GPS_RECEIVER_NODE_HPP */

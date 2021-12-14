@@ -7,10 +7,11 @@
  *
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
-#include "lift_server/lift_server_node.hpp"
+#include "wrp_ros2/peripheral/lift_server_node.hpp"
+#include "rclcpp_components/register_node_macro.hpp"
 using namespace std::placeholders;
 
-namespace lift_server {
+namespace wrp_ros2 {
 using namespace westonrobot;
 
 LiftServerNode::LiftServerNode(const rclcpp::NodeOptions& options)
@@ -31,8 +32,8 @@ LiftServerNode::LiftServerNode(const rclcpp::NodeOptions& options)
       "/lift_server/speed_cmd", 1,
       std::bind(&LiftServerNode::SpeedCmdCallback, this, _1));
 
-  state_pub_ =
-      this->create_publisher<sdk_interfaces::msg::LiftState>("/lift_server/state", 1);
+  state_pub_ = this->create_publisher<wrp_ros2::msg::LiftState>(
+      "/lift_server/state", 1);
 
   timer_ = this->create_wall_timer(
       std::chrono::milliseconds(publish_interval_),
@@ -64,12 +65,13 @@ bool LiftServerNode::ReadParameters() {
   RCLCPP_INFO_STREAM(this->get_logger(), "baud_rate: " << baud_rate_);
 
   this->get_parameter("publish_interval", publish_interval_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "publish_interval: " << publish_interval_);
+  RCLCPP_INFO_STREAM(this->get_logger(),
+                     "publish_interval: " << publish_interval_);
 
   this->get_parameter("command_preemption", command_preemption_);
   RCLCPP_INFO_STREAM(this->get_logger(),
                      "command_preemption: " << command_preemption_);
-                     
+
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   return true;
@@ -198,7 +200,7 @@ void LiftServerNode::SpeedCmdCallback(
 }
 
 void LiftServerNode::PublishStateCallback() {
-  if(lift_->IsOkay()) {
+  if (lift_->IsOkay()) {
     auto lift_state = lift_->GetLiftState();
     lift_state_.position = lift_state.position;
     lift_state_.speed = lift_state.speed;
@@ -206,6 +208,6 @@ void LiftServerNode::PublishStateCallback() {
   }
 }
 
-}  // namespace lift_server
+}  // namespace wrp_ros2
 
-RCLCPP_COMPONENTS_REGISTER_NODE(lift_server::LiftServerNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(wrp_ros2::LiftServerNode)
