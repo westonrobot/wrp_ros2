@@ -29,21 +29,50 @@ find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(action_msgs REQUIRED)
 # wr packages
-find_package(wrp_zbus REQUIRED)
 find_package(wrp_sdk REQUIRED)
+
+# set all interface files
+set(message_files
+# peripheral device
+"msg/peripheral/LiftState.msg"
+# mobile base
+"msg/mobile_base/ActuatorState.msg"
+"msg/mobile_base/BumperState.msg"
+"msg/mobile_base/LightState.msg"
+"msg/mobile_base/LightCommand.msg"
+"msg/mobile_base/LightControlType.msg"
+"msg/mobile_base/MotionControlType.msg"
+"msg/mobile_base/MotionState.msg"
+"msg/mobile_base/MotionCommand.msg"
+"msg/mobile_base/RCState.msg"
+"msg/mobile_base/SystemState.msg"
+"msg/mobile_base/RangeData.msg"
+"msg/mobile_base/RangeDataType.msg"
+"msg/mobile_base/Vector3d.msg")
+
+set(service_files
+# mobile base
+"srv/mobile_base/RequestControl.srv"
+"srv/mobile_base/RenounceControl.srv"
+"srv/mobile_base/ActuatorStateCheck.srv"
+"srv/mobile_base/LightStateCheck.srv"
+"srv/mobile_base/RcStateCheck.srv"
+"srv/mobile_base/SystemStateCheck.srv")
+
+set(action_files
+# peripheral devices
+"action/peripheral/LiftGoal.action")
 
 # generate interfaces
 # even though its called sdk_interfaces
-# headers generated are still wrp_ros2/msg/...
+# headers generated are still wrp_ros2/msg/mobile_base/...
 rosidl_generate_interfaces(sdk_interfaces
-    "msg/LiftState.msg"
-    "action/LiftGoal.action"
+${message_files} ${service_files} ${action_files}  
   DEPENDENCIES
     builtin_interfaces
     std_msgs
     action_msgs
-    sensor_msgs
-)
+    sensor_msgs)
 
 ament_export_dependencies(rosidl_default_runtime)
 
@@ -55,9 +84,7 @@ add_library(${PROJECT_NAME}
 add_dependencies(${PROJECT_NAME} sdk_interfaces)
 rosidl_target_interfaces(${PROJECT_NAME} 
   sdk_interfaces "rosidl_typesupport_cpp")
-target_link_libraries(${PROJECT_NAME}
-    westonrobot::wrp_sdk
-    westonrobot::wrp_zbus)
+target_link_libraries(${PROJECT_NAME} westonrobot::wrp_sdk)
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>)
@@ -68,9 +95,9 @@ ament_target_dependencies(${PROJECT_NAME}
   std_msgs)
 
 # create executables from library
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "wrp_ros2::GpsReceiverNode" EXECUTABLE gps_receiver_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "wrp_ros2::ImuSensorNode" EXECUTABLE imu_sensor_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "wrp_ros2::LiftServerNode" EXECUTABLE lift_server_node)
+rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
+rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
+rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::LiftServerNode" EXECUTABLE lift_server_node)
 
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib

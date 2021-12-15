@@ -1,0 +1,5 @@
+Vector3d desired_linear
+Vector3d desired_angular
+int32 source
+bool collision_detected
+bool assisted_mode_enabled
