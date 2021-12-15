@@ -15,6 +15,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/weston_robot/lib/cmake")
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -80,7 +82,10 @@ add_library(${PROJECT_NAME}
   # peripheral device support
   src/peripheral/gps_receiver_node.cpp
   src/peripheral/imu_sensor_node.cpp
-  src/peripheral/lift_server_node.cpp)
+  src/peripheral/lift_server_node.cpp
+  #mobile base
+  # src/mobile_base/mobile_base_node.cpp
+)
 add_dependencies(${PROJECT_NAME} sdk_interfaces)
 rosidl_target_interfaces(${PROJECT_NAME} 
   sdk_interfaces "rosidl_typesupport_cpp")
@@ -92,7 +97,10 @@ ament_target_dependencies(${PROJECT_NAME}
   rclcpp
   rclcpp_action
   rclcpp_components
-  std_msgs)
+  builtin_interfaces
+  std_msgs
+  action_msgs
+  sensor_msgs)
 
 # create executables from library
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
