@@ -21,27 +21,31 @@ GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
     rclcpp::shutdown();
   }
 
-  receiver_ = std::make_unique<GpsReceiver>();
-
-  if (!receiver_->Connect(device_path_, baud_rate_)) {
+  if (!GpsReceiverNode::SetupReceiver()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup gps receiver");
     rclcpp::shutdown();
   }
 
-  pub_ = this->create_publisher<sensor_msgs::msg::NavSatFix>(
+  publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>(
       "/gps_receiver/navsat_fix", 1);
-
-  loop_timer_ = this->create_wall_timer(
-      std::chrono::milliseconds(publish_interval_),
-      std::bind(&GpsReceiverNode::PublishCallback, this));
 }
 
 GpsReceiverNode::~GpsReceiverNode() {}
 
+bool GpsReceiverNode::SetupReceiver() {
+  receiver_ = std::make_unique<GpsReceiver>();
+  receiver_->SetProcessGpsMessageCallback(std::bind(
+      &GpsReceiverNode::PublishCallback, this, std::placeholders::_1));
+  if (!receiver_->Connect(device_path_, baud_rate_)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool GpsReceiverNode::ReadParameters() {
   // Declare default parameters
   this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
-  this->declare_parameter<int>("publish_interval", 500);
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<std::string>("frame_id", "gps");
 
@@ -50,10 +54,6 @@ bool GpsReceiverNode::ReadParameters() {
 
   this->get_parameter("device_path", device_path_);
   RCLCPP_INFO_STREAM(this->get_logger(), "device_path: " << device_path_);
-
-  this->get_parameter("publish_interval", publish_interval_);
-  RCLCPP_INFO_STREAM(this->get_logger(),
-                     "publish_interval: " << publish_interval_);
 
   this->get_parameter("baud_rate", baud_rate_);
   RCLCPP_INFO_STREAM(this->get_logger(), "baud_rate: " << baud_rate_);
@@ -66,20 +66,16 @@ bool GpsReceiverNode::ReadParameters() {
   return true;
 }
 
-void GpsReceiverNode::PublishCallback() {
-  if (receiver_->IsOkay()) {
-    auto gps_fix = receiver_->GetFixData();
-
-    sat_fix_.header.stamp = this->get_clock()->now();
-    sat_fix_.header.frame_id = frame_id_;
-    sat_fix_.status.status = gps_fix.status.status;
-    sat_fix_.status.service = gps_fix.status.service;
-    sat_fix_.latitude = gps_fix.latitude;
-    sat_fix_.longitude = gps_fix.longitude;
-    sat_fix_.altitude = gps_fix.altitude;
-    sat_fix_.position_covariance = gps_fix.position_covariance;
-    pub_->publish(sat_fix_);
-  }
+void GpsReceiverNode::PublishCallback(GpsReceiver::NavSatFix gps_fix) {
+  sat_fix_.header.stamp = this->get_clock()->now();
+  sat_fix_.header.frame_id = frame_id_;
+  sat_fix_.status.status = gps_fix.status.status;
+  sat_fix_.status.service = gps_fix.status.service;
+  sat_fix_.latitude = gps_fix.latitude;
+  sat_fix_.longitude = gps_fix.longitude;
+  sat_fix_.altitude = gps_fix.altitude;
+  sat_fix_.position_covariance = gps_fix.position_covariance;
+  publisher_->publish(sat_fix_);
 }
 
 }  // namespace westonrobot

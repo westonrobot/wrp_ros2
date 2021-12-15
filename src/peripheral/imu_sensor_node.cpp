@@ -20,26 +20,31 @@ ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
     rclcpp::shutdown();
   }
 
-  imu_ = std::make_unique<ImuSensor>();
-
-  if (!imu_->Connect(device_path_, baud_rate_)) {
+  if (!ImuSensorNode::SetupImuSensor()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup Imu Sensor!!");
     rclcpp::shutdown();
   }
 
-  pub_ = this->create_publisher<sensor_msgs::msg::Imu>("/imu_sensor/imu", 1);
-
-  loop_timer_ =
-      this->create_wall_timer(std::chrono::milliseconds(publish_interval_),
-                              std::bind(&ImuSensorNode::PublishCallback, this));
+  publisher_ =
+      this->create_publisher<sensor_msgs::msg::Imu>("/imu_sensor/imu", 1);
 }
 
 ImuSensorNode::~ImuSensorNode() {}
 
+bool ImuSensorNode::SetupImuSensor() {
+  imu_ = std::make_unique<ImuSensor>();
+  imu_->SetProcessImuMessageCallback(
+      std::bind(&ImuSensorNode::PublishCallback, this, std::placeholders::_1));
+  if (!imu_->Connect(device_path_, baud_rate_)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ImuSensorNode::ReadParameters() {
   // Declare default parameters
   this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
-  this->declare_parameter<int>("publish_interval", 500);
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<std::string>("frame_id", "imu");
 
@@ -64,28 +69,25 @@ bool ImuSensorNode::ReadParameters() {
   return true;
 }
 
-void ImuSensorNode::PublishCallback() {
-  if (imu_->IsOkay()) {
-    auto data = imu_->GetImuMessage();
-    imu_data_.header.stamp = this->get_clock()->now();
-    imu_data_.header.frame_id = frame_id_;
-    imu_data_.orientation.x = data.orientation.q0;
-    imu_data_.orientation.y = data.orientation.q1;
-    imu_data_.orientation.z = data.orientation.q2;
-    imu_data_.orientation.w = data.orientation.q3;
-    imu_data_.orientation_covariance = data.orientation_covariance;
-    imu_data_.angular_velocity.x = data.angular_velocity.x;
-    imu_data_.angular_velocity.y = data.angular_velocity.y;
-    imu_data_.angular_velocity.z = data.angular_velocity.z;
-    imu_data_.angular_velocity_covariance = data.angular_velocity_covariance;
-    imu_data_.linear_acceleration.x = data.linear_acceleration.x;
-    imu_data_.linear_acceleration.y = data.linear_acceleration.y;
-    imu_data_.linear_acceleration.z = data.linear_acceleration.z;
-    imu_data_.linear_acceleration_covariance =
-        data.linear_acceleration_covariance;
+void ImuSensorNode::PublishCallback(ImuSensor::ImuMessage imu_msg) {
+  imu_data_.header.stamp = this->get_clock()->now();
+  imu_data_.header.frame_id = frame_id_;
+  imu_data_.orientation.x = imu_msg.orientation.q0;
+  imu_data_.orientation.y = imu_msg.orientation.q1;
+  imu_data_.orientation.z = imu_msg.orientation.q2;
+  imu_data_.orientation.w = imu_msg.orientation.q3;
+  imu_data_.orientation_covariance = imu_msg.orientation_covariance;
+  imu_data_.angular_velocity.x = imu_msg.angular_velocity.x;
+  imu_data_.angular_velocity.y = imu_msg.angular_velocity.y;
+  imu_data_.angular_velocity.z = imu_msg.angular_velocity.z;
+  imu_data_.angular_velocity_covariance = imu_msg.angular_velocity_covariance;
+  imu_data_.linear_acceleration.x = imu_msg.linear_acceleration.x;
+  imu_data_.linear_acceleration.y = imu_msg.linear_acceleration.y;
+  imu_data_.linear_acceleration.z = imu_msg.linear_acceleration.z;
+  imu_data_.linear_acceleration_covariance =
+      imu_msg.linear_acceleration_covariance;
 
-    pub_->publish(imu_data_);
-  }
+  publisher_->publish(imu_data_);
 }
 }  // namespace westonrobot
 

@@ -15,7 +15,6 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `device_path` |str | Path to sensor port.<br />Default: "/dev/ttyUSB0"<br /> |
-| `publish_interval` | int | Data publish rate in milliseconds.<br />Default: 500<br />Lower==faster, Higher==slower|
 | `baud_rate` | int | Sensor's communication baud rate.<br />Default: "115200"|
 | `frame_id` | str | Frame id used in /imu_sensor/imu's header.<br />Default: "imu"|
 
@@ -28,7 +27,6 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `device_path` |str | Path to receiver port.<br />Default: "/dev/ttyUSB0"<br /> |
-| `publish_interval` | int | Data publish rate in milliseconds.<br />Default: 500<br />Lower==faster, Higher==slower|
 | `baud_rate` | int | Sensor's communication baud rate.<br />Default: "115200"|
 | `frame_id` | str | Frame id used in /gps_receiver/navsat_fix's header.<br />Default: "gps"|
 

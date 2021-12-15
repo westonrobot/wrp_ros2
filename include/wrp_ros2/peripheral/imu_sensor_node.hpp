@@ -41,12 +41,12 @@ class ImuSensorNode : public rclcpp::Node {
   // ----- Published Messages-----
   sensor_msgs::msg::Imu imu_data_;
   // ----- Subscribers & Publishers -----
-  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
+  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr publisher_;
   // ----- Timers -----
-  rclcpp::TimerBase::SharedPtr loop_timer_;
   // ----- Callbacks -----
-  void PublishCallback();
+  void PublishCallback(ImuSensor::ImuMessage imu_msg);
 
+  bool SetupImuSensor();
   bool ReadParameters();
 };
 }  // namespace westonrobot
