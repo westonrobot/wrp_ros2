@@ -6,15 +6,16 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
-        get_package_share_directory("gps_receiver"),
+        get_package_share_directory("wrp_ros2"),
        "config",
-       "gps_receiver_node_config.yaml",
+       "peripheral",
+       "imu_sensor_node_config.yaml",
     )
 
     node = Node(
-        package= "gps_receiver",
-        name= "gps_receiver_node",
-        executable= "gps_receiver_node",
+        package= "wrp_ros2",
+        name= "imu_sensor_node",
+        executable= "imu_sensor_node",
         output= "screen",
         parameters= [config],
     )

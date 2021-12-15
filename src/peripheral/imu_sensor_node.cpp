@@ -7,13 +7,15 @@
  *
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
-#include "imu_sensor/imu_sensor_node.hpp"
+#include "wrp_ros2/peripheral/imu_sensor_node.hpp"
+#include "rclcpp_components/register_node_macro.hpp"
 using std::placeholders::_1;
 
-namespace imu_sensor {
+namespace wrp_ros2 {
 using namespace westonrobot;
 
-ImuSensorNode::ImuSensorNode() : Node("imu_sensor_node") {
+ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
+    : Node("imu_sensor_node", options) {
   if (!ImuSensorNode::ReadParameters()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Could not load parameters");
     rclcpp::shutdown();
@@ -86,4 +88,6 @@ void ImuSensorNode::PublishCallback() {
     pub_->publish(imu_data_);
   }
 }
-}  // namespace imu_sensor
+}  // namespace wrp_ros2
+
+RCLCPP_COMPONENTS_REGISTER_NODE(wrp_ros2::ImuSensorNode)

@@ -1,13 +1,9 @@
 # wrp_ros2
 
-## Packages
+## About
 
-This contains minimal packages to drive peripherals in wrp_sdk
-
-* gps_receiver: a ROS2 wrapper around wrp_sdk's gps_receiver
-* imu_sensor: a ROS2 wrapper around wrp_sdk's imu_sensor
-
-More details in the individual packages
+This package contains a minimal wrapper around wrp_sdk
+More details in the individual src sub-folders
 
 ## Basic Usage
 
@@ -19,20 +15,27 @@ More details in the individual packages
     cd ~/ros2_ws/src
     git clone https://gitlab.com/westonrobot/ros2/wrp_ros2.git
     cd ..
-    colcon build
+    colcon build --symlink-install
     . install/setup.bash
     ````
 
 2. Launch ROS nodes  
+    **_Change run time parameters by editing the corresponding config file_**
 
     1. GPS Receiver Node
 
         ````bash
-        ros2 launch gps_receiver gps_receiver_launch.py 
+        ros2 launch wrp_ros2 gps_receiver_launch.py 
         ````
 
     2. IMU Sensor Node
 
         ````bash
-        ros2 launch imu_sensor imu_sensor_launch.py 
+        ros2 launch wrp_ros2 imu_sensor_launch.py 
+        ````
+
+    3. Lift Action Server Node
+
+        ````bash
+        ros2 launch wrp_ros2 lift_server_launch.py 
         ````

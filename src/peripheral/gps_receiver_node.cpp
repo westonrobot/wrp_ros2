@@ -8,13 +8,15 @@
  *
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
-#include "gps_receiver/gps_receiver_node.hpp"
+#include "wrp_ros2/peripheral/gps_receiver_node.hpp"
+#include "rclcpp_components/register_node_macro.hpp"
 using std::placeholders::_1;
 
-namespace gps_receiver {
+namespace wrp_ros2 {
 using namespace westonrobot;
 
-GpsReceiverNode::GpsReceiverNode() : Node("gps_receiver_node") {
+GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
+    : Node("gps_receiver_node", options) {
   if (!GpsReceiverNode::ReadParameters()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Could not load parameters");
     rclcpp::shutdown();
@@ -81,4 +83,6 @@ void GpsReceiverNode::PublishCallback() {
   }
 }
 
-}  // namespace gps_receiver
+}  // namespace wrp_ros2
+
+RCLCPP_COMPONENTS_REGISTER_NODE(wrp_ros2::GpsReceiverNode)
