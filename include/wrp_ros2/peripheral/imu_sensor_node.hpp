@@ -24,8 +24,7 @@
 // ROS Messages
 #include "sensor_msgs/msg/imu.hpp"
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 class ImuSensorNode : public rclcpp::Node {
  public:
   ImuSensorNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
@@ -50,6 +49,6 @@ class ImuSensorNode : public rclcpp::Node {
 
   bool ReadParameters();
 };
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
 #endif /* IMU_SENSOR_NODE_HPP */

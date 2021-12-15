@@ -25,8 +25,7 @@
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 #include "sensor_msgs/msg/nav_sat_status.hpp"
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 
 class GpsReceiverNode : public rclcpp::Node {
  public:
@@ -53,6 +52,6 @@ class GpsReceiverNode : public rclcpp::Node {
   bool ReadParameters();
 };
 
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
 #endif /* GPS_RECEIVER_NODE_HPP */

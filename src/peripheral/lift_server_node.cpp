@@ -11,8 +11,7 @@
 #include "rclcpp_components/register_node_macro.hpp"
 using namespace std::placeholders;
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 
 LiftServerNode::LiftServerNode(const rclcpp::NodeOptions& options)
     : Node("lift_server_node", options) {
@@ -208,6 +207,6 @@ void LiftServerNode::PublishStateCallback() {
   }
 }
 
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
-RCLCPP_COMPONENTS_REGISTER_NODE(wrp_ros2::LiftServerNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::LiftServerNode)

@@ -12,8 +12,7 @@
 #include "rclcpp_components/register_node_macro.hpp"
 using std::placeholders::_1;
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 
 GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
     : Node("gps_receiver_node", options) {
@@ -83,6 +82,6 @@ void GpsReceiverNode::PublishCallback() {
   }
 }
 
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
-RCLCPP_COMPONENTS_REGISTER_NODE(wrp_ros2::GpsReceiverNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::GpsReceiverNode)

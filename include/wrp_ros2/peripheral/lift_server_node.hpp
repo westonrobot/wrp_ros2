@@ -20,8 +20,7 @@
 #include "wrp_ros2/action/lift_goal.hpp"
 #include "std_msgs/msg/int8.hpp"
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 class LiftServerNode : public rclcpp::Node {
  public:
   LiftServerNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
@@ -59,6 +58,6 @@ class LiftServerNode : public rclcpp::Node {
   void PublishStateCallback();
   bool ReadParameters();
 };
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
 #endif /* LIFT_SERVER_NODE_HPP */

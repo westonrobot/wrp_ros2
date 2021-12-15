@@ -11,8 +11,7 @@
 #include "rclcpp_components/register_node_macro.hpp"
 using std::placeholders::_1;
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 
 ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
     : Node("imu_sensor_node", options) {
@@ -88,6 +87,6 @@ void ImuSensorNode::PublishCallback() {
     pub_->publish(imu_data_);
   }
 }
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
-RCLCPP_COMPONENTS_REGISTER_NODE(wrp_ros2::ImuSensorNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::ImuSensorNode)
