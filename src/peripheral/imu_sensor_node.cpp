@@ -33,7 +33,7 @@ ImuSensorNode::~ImuSensorNode() {}
 
 bool ImuSensorNode::SetupImuSensor() {
   imu_ = std::make_unique<ImuSensor>();
-  imu_->SetProcessImuMessageCallback(
+  imu_->SetDataReceivedCallback(
       std::bind(&ImuSensorNode::PublishCallback, this, std::placeholders::_1));
   if (!imu_->Connect(device_path_, baud_rate_)) {
     return false;
@@ -69,13 +69,13 @@ bool ImuSensorNode::ReadParameters() {
   return true;
 }
 
-void ImuSensorNode::PublishCallback(ImuSensor::ImuMessage imu_msg) {
+void ImuSensorNode::PublishCallback(ImuData imu_msg) {
   imu_data_.header.stamp = this->get_clock()->now();
   imu_data_.header.frame_id = frame_id_;
-  imu_data_.orientation.x = imu_msg.orientation.q0;
-  imu_data_.orientation.y = imu_msg.orientation.q1;
-  imu_data_.orientation.z = imu_msg.orientation.q2;
-  imu_data_.orientation.w = imu_msg.orientation.q3;
+  imu_data_.orientation.x = imu_msg.orientation.x;
+  imu_data_.orientation.y = imu_msg.orientation.y;
+  imu_data_.orientation.z = imu_msg.orientation.z;
+  imu_data_.orientation.w = imu_msg.orientation.w;
   imu_data_.orientation_covariance = imu_msg.orientation_covariance;
   imu_data_.angular_velocity.x = imu_msg.angular_velocity.x;
   imu_data_.angular_velocity.y = imu_msg.angular_velocity.y;

@@ -34,7 +34,7 @@ GpsReceiverNode::~GpsReceiverNode() {}
 
 bool GpsReceiverNode::SetupReceiver() {
   receiver_ = std::make_unique<GpsReceiver>();
-  receiver_->SetProcessGpsMessageCallback(std::bind(
+  receiver_->SetDataReceivedCallback(std::bind(
       &GpsReceiverNode::PublishCallback, this, std::placeholders::_1));
   if (!receiver_->Connect(device_path_, baud_rate_)) {
     return false;
@@ -66,7 +66,7 @@ bool GpsReceiverNode::ReadParameters() {
   return true;
 }
 
-void GpsReceiverNode::PublishCallback(GpsReceiver::NavSatFix gps_fix) {
+void GpsReceiverNode::PublishCallback(NavSatFix gps_fix) {
   sat_fix_.header.stamp = this->get_clock()->now();
   sat_fix_.header.frame_id = frame_id_;
   sat_fix_.status.status = gps_fix.status.status;

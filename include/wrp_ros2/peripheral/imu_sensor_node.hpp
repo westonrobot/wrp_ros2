@@ -44,7 +44,7 @@ class ImuSensorNode : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr publisher_;
   // ----- Timers -----
   // ----- Callbacks -----
-  void PublishCallback(ImuSensor::ImuMessage imu_msg);
+  void PublishCallback(ImuData imu_msg);
 
   bool SetupImuSensor();
   bool ReadParameters();

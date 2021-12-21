@@ -46,7 +46,7 @@ class GpsReceiverNode : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr publisher_;
   // ----- Timers -----
   // ----- Callbacks -----
-  void PublishCallback(GpsReceiver::NavSatFix gps_fix);
+  void PublishCallback(NavSatFix gps_fix);
 
   bool SetupReceiver();
   bool ReadParameters();
