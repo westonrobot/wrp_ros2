@@ -25,11 +25,14 @@ find_package(rmw_implementation_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(tf2 REQUIRED)
 # interfaces
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(action_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 # wr packages
 find_package(wrp_sdk REQUIRED)
 
@@ -70,7 +73,9 @@ ${message_files} ${service_files} ${action_files}
     builtin_interfaces
     std_msgs
     action_msgs
-    sensor_msgs)
+    sensor_msgs
+    geometry_msgs
+    tf2_geometry_msgs)
 
 ament_export_dependencies(rosidl_default_runtime)
 
@@ -80,7 +85,7 @@ add_library(${PROJECT_NAME}
   src/peripheral/imu_sensor_node.cpp
   src/peripheral/lift_server_node.cpp
   #mobile base
-  # src/mobile_base/mobile_base_node.cpp
+  src/mobile_base/mobile_base_node.cpp
 )
 add_dependencies(${PROJECT_NAME} sdk_interfaces)
 rosidl_target_interfaces(${PROJECT_NAME} 
@@ -102,6 +107,7 @@ ament_target_dependencies(${PROJECT_NAME}
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::LiftServerNode" EXECUTABLE lift_server_node)
+rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::MobileBaseNode" EXECUTABLE mobile_base_node)
 
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
