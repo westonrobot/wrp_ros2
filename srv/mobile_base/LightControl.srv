@@ -1,5 +1,5 @@
 # request
-int8 id
+uint32 id
 LightControlType command
 ---
 # response
