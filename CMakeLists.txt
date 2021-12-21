@@ -39,27 +39,23 @@ set(message_files
 "msg/peripheral/LiftState.msg"
 # mobile base
 "msg/mobile_base/ActuatorState.msg"
-"msg/mobile_base/BumperState.msg"
-"msg/mobile_base/LightState.msg"
-"msg/mobile_base/LightCommand.msg"
+"msg/mobile_base/ActuatorStateArray.msg"
+"msg/mobile_base/DriverState.msg"
 "msg/mobile_base/LightControlType.msg"
-"msg/mobile_base/MotionControlType.msg"
-"msg/mobile_base/MotionState.msg"
 "msg/mobile_base/MotionCommand.msg"
-"msg/mobile_base/RCState.msg"
-"msg/mobile_base/SystemState.msg"
+"msg/mobile_base/MotionState.msg"
+"msg/mobile_base/MotorState.msg"
 "msg/mobile_base/RangeData.msg"
 "msg/mobile_base/RangeDataType.msg"
-"msg/mobile_base/Vector3d.msg")
+"msg/mobile_base/RcState.msg"
+"msg/mobile_base/SystemState.msg")
 
 set(service_files
 # mobile base
-"srv/mobile_base/RequestControl.srv"
-"srv/mobile_base/RenounceControl.srv"
-"srv/mobile_base/ActuatorStateCheck.srv"
-"srv/mobile_base/LightStateCheck.srv"
-"srv/mobile_base/RcStateCheck.srv"
-"srv/mobile_base/SystemStateCheck.srv")
+"srv/mobile_base/AccessControl.srv"
+"srv/mobile_base/AssistedModeControl.srv"
+"srv/mobile_base/LightControl.srv"
+"srv/mobile_base/MotionReset.srv")
 
 set(action_files
 # peripheral devices

@@ -1,0 +1,6 @@
+# request
+int8 id
+LightControlType command
+---
+# response
+LightControlType state

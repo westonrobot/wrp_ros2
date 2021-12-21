@@ -1,2 +1,0 @@
-Vector3d linear
-Vector3d angular
