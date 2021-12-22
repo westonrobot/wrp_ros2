@@ -54,10 +54,6 @@ bool ImuSensorNode::ReadParameters() {
   this->get_parameter("device_path", device_path_);
   RCLCPP_INFO_STREAM(this->get_logger(), "device_path: " << device_path_);
 
-  this->get_parameter("publish_interval", publish_interval_);
-  RCLCPP_INFO_STREAM(this->get_logger(),
-                     "publish_interval: " << publish_interval_);
-
   this->get_parameter("baud_rate", baud_rate_);
   RCLCPP_INFO_STREAM(this->get_logger(), "baud_rate: " << baud_rate_);
 

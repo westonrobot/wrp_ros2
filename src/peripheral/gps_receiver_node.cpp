@@ -22,7 +22,7 @@ GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
   }
 
   if (!GpsReceiverNode::SetupReceiver()) {
-    RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup gps receiver");
+    RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup GPS receiver!!");
     rclcpp::shutdown();
   }
 
