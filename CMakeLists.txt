@@ -26,11 +26,13 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 # interfaces
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(action_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 # wr packages
@@ -74,18 +76,17 @@ ${message_files} ${service_files} ${action_files}
     std_msgs
     action_msgs
     sensor_msgs
-    geometry_msgs
-    tf2_geometry_msgs)
+    geometry_msgs)
 
 ament_export_dependencies(rosidl_default_runtime)
 
 add_library(${PROJECT_NAME}
+  #mobile base
+  src/mobile_base/mobile_base_node.cpp
   # peripheral device support
   src/peripheral/gps_receiver_node.cpp
   src/peripheral/imu_sensor_node.cpp
   src/peripheral/lift_server_node.cpp
-  #mobile base
-  src/mobile_base/mobile_base_node.cpp
 )
 add_dependencies(${PROJECT_NAME} sdk_interfaces)
 rosidl_target_interfaces(${PROJECT_NAME} 
@@ -98,10 +99,15 @@ ament_target_dependencies(${PROJECT_NAME}
   rclcpp
   rclcpp_action
   rclcpp_components
+  tf2
   builtin_interfaces
+  tf2_ros
+  tf2_geometry_msgs
   std_msgs
   action_msgs
-  sensor_msgs)
+  sensor_msgs
+  geometry_msgs
+  nav_msgs)
 
 # create executables from library
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)

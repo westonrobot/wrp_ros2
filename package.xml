@@ -22,8 +22,10 @@
   <depend>rmw_implementation_cmake</depend>
   <depend>xacro</depend>
   <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>tf2</depend>
+  <depend>tf2_ros</depend>
 
   <member_of_group>rosidl_interface_packages</member_of_group>
 

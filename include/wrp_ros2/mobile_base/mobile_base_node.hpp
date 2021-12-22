@@ -24,7 +24,9 @@
 #include "wrp_ros2/msg/system_state.hpp"
 #include "wrp_ros2/msg/motion_state.hpp"
 #include "wrp_ros2/msg/actuator_state_array.hpp"
+#include "wrp_ros2/msg/actuator_state.hpp"
 #include "wrp_ros2/msg/range_data.hpp"
+#include "wrp_ros2/msg/range_data_type.hpp"
 #include "wrp_ros2/msg/motion_command.hpp"
 
 #include "wrp_ros2/srv/access_control.hpp"
@@ -36,7 +38,7 @@ namespace westonrobot {
 class MobileBaseNode : public rclcpp::Node {
  public:
   MobileBaseNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
-  ~MobileBaseNode();
+  ~MobileBaseNode() {};
 
  private:
   // ----- ROS Node Parameters -----
@@ -100,6 +102,7 @@ class MobileBaseNode : public rclcpp::Node {
   void PublishRobotState();
   void PublishSensorData();
   void PublishWheelOdometry();
+  geometry_msgs::msg::Quaternion CreateQuaternionMsgFromYaw(double yaw);
 };  // MobileBaseNode
 }  // namespace westonrobot
 #endif /* MOBILE_BASE_NODE_HPP */

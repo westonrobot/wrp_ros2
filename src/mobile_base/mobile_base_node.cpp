@@ -17,17 +17,10 @@
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/transform_datatypes.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-
-namespace {
-geometry_msgs::msg::Quaternion createQuaternionMsgFromYaw(double yaw) {
-  tf2::Quaternion q;
-  q.setRPY(0, 0, yaw);
-  return tf2::toMsg(q);
-}
-}  // namespace
+using namespace std::placeholders;
 
 namespace westonrobot {
-using namespace std::placeholders;
+
 MobileBaseNode::MobileBaseNode(const rclcpp::NodeOptions& options)
     : Node("mobile_base_node", options) {
   if (!MobileBaseNode::ReadParameters()) {
@@ -344,7 +337,7 @@ void MobileBaseNode::PublishWheelOdometry() {
   position_y_ += d_y;
   theta_ += d_theta;
 
-  geometry_msgs::msg::Quaternion odom_quat = createQuaternionMsgFromYaw(theta_);
+  geometry_msgs::msg::Quaternion odom_quat = MobileBaseNode::CreateQuaternionMsgFromYaw(theta_);
 
   // publish tf transformation
   geometry_msgs::msg::TransformStamped tf_msg;
@@ -375,6 +368,12 @@ void MobileBaseNode::PublishWheelOdometry() {
   odom_msg.twist.twist.angular.z = angular_speed;
 
   odom_publisher_->publish(odom_msg);
+}
+
+geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(double yaw) {
+  tf2::Quaternion q;
+  q.setRPY(0, 0, yaw);
+  return tf2::toMsg(q);
 }
 
 }  // namespace westonrobot
