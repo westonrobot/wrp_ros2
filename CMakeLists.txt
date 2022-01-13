@@ -67,20 +67,19 @@ set(action_files
 "action/peripheral/LiftGoal.action")
 
 # generate interfaces
-# even though its called sdk_interfaces
-# headers generated are still wrp_ros2/msg/mobile_base/...
-rosidl_generate_interfaces(sdk_interfaces
+rosidl_generate_interfaces(${PROJECT_NAME}
 ${message_files} ${service_files} ${action_files}  
   DEPENDENCIES
     builtin_interfaces
     std_msgs
     action_msgs
     sensor_msgs
-    geometry_msgs)
+    geometry_msgs
+    nav_msgs)
 
 ament_export_dependencies(rosidl_default_runtime)
 
-add_library(${PROJECT_NAME}
+add_library(wrp_sdk_ros2
   #mobile base
   src/mobile_base/mobile_base_node.cpp
   # peripheral device support
@@ -88,14 +87,14 @@ add_library(${PROJECT_NAME}
   src/peripheral/imu_sensor_node.cpp
   src/peripheral/lift_server_node.cpp
 )
-add_dependencies(${PROJECT_NAME} sdk_interfaces)
-rosidl_target_interfaces(${PROJECT_NAME} 
-  sdk_interfaces "rosidl_typesupport_cpp")
-target_link_libraries(${PROJECT_NAME} westonrobot::wrp_sdk)
-target_include_directories(${PROJECT_NAME} PUBLIC
+add_dependencies(wrp_sdk_ros2 ${PROJECT_NAME})
+rosidl_target_interfaces(wrp_sdk_ros2 
+  ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(wrp_sdk_ros2 westonrobot::wrp_sdk)
+target_include_directories(wrp_sdk_ros2 PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>)
-ament_target_dependencies(${PROJECT_NAME}
+ament_target_dependencies(wrp_sdk_ros2
   rclcpp
   rclcpp_action
   rclcpp_components
@@ -110,12 +109,12 @@ ament_target_dependencies(${PROJECT_NAME}
   nav_msgs)
 
 # create executables from library
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::LiftServerNode" EXECUTABLE lift_server_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "westonrobot::MobileBaseNode" EXECUTABLE mobile_base_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::LiftServerNode" EXECUTABLE lift_server_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::MobileBaseNode" EXECUTABLE mobile_base_node)
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS wrp_sdk_ros2
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
