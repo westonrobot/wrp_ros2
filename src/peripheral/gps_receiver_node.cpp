@@ -27,7 +27,7 @@ GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
   }
 
   publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>(
-      "/gps_receiver/navsat_fix", 1);
+      "/fix", 1);
 }
 
 GpsReceiverNode::~GpsReceiverNode() {}
@@ -45,9 +45,9 @@ bool GpsReceiverNode::SetupReceiver() {
 
 bool GpsReceiverNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
+  this->declare_parameter<std::string>("device_path", "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00");
   this->declare_parameter<int>("baud_rate", 115200);
-  this->declare_parameter<std::string>("frame_id", "gps");
+  this->declare_parameter<std::string>("frame_id", "gps_link");
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");

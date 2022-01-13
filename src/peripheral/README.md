@@ -19,15 +19,15 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 
 
 ### gps_receiver_node
-| Published Topic            | Type                        | Description                                |
-| -------------------------- | --------------------------- | ------------------------------------------ |
-| `/gps_receiver/navsat_fix` | sensor_msgs::msg::NavSatFix | Outputs the navigation satellite fix data. |
+| Published Topic | Type                        | Description                                |
+| --------------- | --------------------------- | ------------------------------------------ |
+| `/fix`          | sensor_msgs::msg::NavSatFix | Outputs the navigation satellite fix data. |
 
-| Parameter     | Type | Description                                                             |
-| ------------- | ---- | ----------------------------------------------------------------------- |
-| `device_path` | str  | Path to receiver port.<br />Default: "/dev/ttyUSB0"<br />               |
-| `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"                |
-| `frame_id`    | str  | Frame id used in /gps_receiver/navsat_fix's header.<br />Default: "gps" |
+| Parameter     | Type | Description                                                                                                             |
+| ------------- | ---- | ----------------------------------------------------------------------------------------------------------------------- |
+| `device_path` | str  | Path to receiver port.<br />Default: "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00"<br /> |
+| `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"                                                                |
+| `frame_id`    | str  | Frame id used in /gps_receiver/navsat_fix's header.<br />Default: "gps_link"                                            |
 
 
 ### lift_server_node
