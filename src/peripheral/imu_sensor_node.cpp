@@ -44,7 +44,7 @@ bool ImuSensorNode::SetupImuSensor() {
 
 bool ImuSensorNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
+  this->declare_parameter<std::string>("device_path", "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0");
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<std::string>("frame_id", "imu");
 

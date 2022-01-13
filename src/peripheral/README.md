@@ -7,15 +7,15 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 ## Nodes
 
 ### imu_sensor_node
-| Published Topic   | Type                  | Description                  |
-| ----------------- | --------------------- | ---------------------------- |
-| `/imu_sensor/imu` | sensor_msgs::msg::Imu | Outputs the IMU Sensor data. |
+| Published Topic | Type                  | Description                  |
+| --------------- | --------------------- | ---------------------------- |
+| `/imu`          | sensor_msgs::msg::Imu | Outputs the IMU Sensor data. |
 
-| Parameter     | Type | Description                                                    |
-| ------------- | ---- | -------------------------------------------------------------- |
-| `device_path` | str  | Path to sensor port.<br />Default: "/dev/ttyUSB0"<br />        |
-| `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"       |
-| `frame_id`    | str  | Frame id used in /imu_sensor/imu's header.<br />Default: "imu" |
+| Parameter     | Type | Description                                                                                 |
+| ------------- | ---- | ------------------------------------------------------------------------------------------- |
+| `device_path` | str  | Path to sensor port.<br />Default: "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"<br /> |
+| `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"                                    |
+| `frame_id`    | str  | Frame id used in /imu_sensor/imu's header.<br />Default: "imu_link"                         |
 
 
 ### gps_receiver_node
