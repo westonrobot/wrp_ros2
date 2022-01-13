@@ -8,7 +8,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     device_path_launch_arg = DeclareLaunchArgument(
-        "device_path", default_value="/dev/ttyUSB0",
+        "device_path", default_value="/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00",
         description="Path to receiver port"
     )
 
@@ -18,7 +18,7 @@ def generate_launch_description():
     )
 
     frame_id_launch_arg = DeclareLaunchArgument(
-        "frame_id", default_value="gps",
+        "frame_id", default_value="gps_link",
         description="GPS frame id"
     )
 

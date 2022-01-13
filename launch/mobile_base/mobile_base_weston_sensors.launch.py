@@ -24,7 +24,6 @@ def generate_launch_description():
                                                         "launch",
                                                         "peripheral",
                                                         "imu_sensor.launch.py")]),
-            launch_arguments={"device_path": "/devttyUSB0"}.items(),
         )
     ])
 
@@ -34,7 +33,6 @@ def generate_launch_description():
                                                         "launch",
                                                         "peripheral",
                                                         "gps_receiver.launch.py")]),
-            launch_arguments={"device_path": "/devttyUSB1"}.items(),
         )
     ])
 

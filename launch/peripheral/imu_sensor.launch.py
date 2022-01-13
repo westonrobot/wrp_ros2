@@ -8,7 +8,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     device_path_launch_arg = DeclareLaunchArgument(
-        "device_path", default_value="/dev/ttyUSB0",
+        "device_path", default_value="/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
         description="Path to receiver port"
     )
 
@@ -18,7 +18,7 @@ def generate_launch_description():
     )
 
     frame_id_launch_arg = DeclareLaunchArgument(
-        "frame_id", default_value="imu",
+        "frame_id", default_value="imu_link",
         description="IMU frame id"
     )
 
