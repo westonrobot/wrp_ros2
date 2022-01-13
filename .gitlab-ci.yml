@@ -5,6 +5,7 @@ foxy-colcon-build:
   before_script:
     - apt-get update && apt-get -y install curl ros-$ROS_DISTRO-xacro
     - echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release focal main" | tee /etc/apt/sources.list.d/weston-robot.list
+    - echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release focal next" | tee -a /etc/apt/sources.list.d/weston-robot.list
     - curl -sSL 'https://westonrobot.jfrog.io/artifactory/api/security/keypair/wr-deb/public' | apt-key add -
     - apt-get update && apt-get -y install wrp_sdk
   script:
