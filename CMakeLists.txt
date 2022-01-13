@@ -40,8 +40,6 @@ find_package(wrp_sdk REQUIRED)
 
 # set all interface files
 set(message_files
-# peripheral device
-"msg/peripheral/LiftState.msg"
 # mobile base
 "msg/mobile_base/ActuatorState.msg"
 "msg/mobile_base/ActuatorStateArray.msg"
@@ -62,9 +60,6 @@ set(service_files
 "srv/mobile_base/LightControl.srv"
 "srv/mobile_base/MotionReset.srv")
 
-set(action_files
-# peripheral devices
-"action/peripheral/LiftGoal.action")
 
 # generate interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -85,7 +80,6 @@ add_library(wrp_sdk_ros2
   # peripheral device support
   src/peripheral/gps_receiver_node.cpp
   src/peripheral/imu_sensor_node.cpp
-  src/peripheral/lift_server_node.cpp
 )
 add_dependencies(wrp_sdk_ros2 ${PROJECT_NAME})
 rosidl_target_interfaces(wrp_sdk_ros2 
@@ -111,7 +105,6 @@ ament_target_dependencies(wrp_sdk_ros2
 # create executables from library
 rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
 rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
-rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::LiftServerNode" EXECUTABLE lift_server_node)
 rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::MobileBaseNode" EXECUTABLE mobile_base_node)
 
 install(TARGETS wrp_sdk_ros2

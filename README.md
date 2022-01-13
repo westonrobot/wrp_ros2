@@ -34,13 +34,7 @@ More details in the individual src sub-folders
         ros2 launch wrp_ros2 imu_sensor_launch.py 
         ```
 
-    3. Lift Action Server Node
-
-        ```bash
-        ros2 launch wrp_ros2 lift_server_launch.py 
-        ```
-
-    4. Mobile Base Node (and [variants](./launch/mobile_base))
+    3. Mobile Base Node (and [variants](./launch/mobile_base))
 
         ```bash
         ros2 launch wrp_ros2 mobile_base.launch.py
