@@ -99,6 +99,9 @@ bool MobileBaseNode::SetupRobot() {
 }
 
 bool MobileBaseNode::SetupInterfaces() {
+  // setup tf broadcaster
+  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+
   // setup subscribers
   motion_cmd_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>(
       "/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
@@ -235,9 +238,13 @@ void MobileBaseNode::MotionResetCallback(
 
 void MobileBaseNode::PublishLoopCallback() {
   if (auto_reconnect_ && !robot_->SdkHasControlToken()) {
-    robot_->RequestControl(50);
+    auto return_code = robot_->RequestControl();
+    if (return_code != HandshakeReturnCode::kControlAcquired) {
+      RCLCPP_WARN_STREAM(this->get_logger(),
+                            "Failed to gain control token, error code: "
+                                << static_cast<int>(return_code));
+    }
   }
-
   PublishRobotState();
   PublishSensorData();
   PublishWheelOdometry();
@@ -293,11 +300,11 @@ void MobileBaseNode::PublishSensorData() {
   wrp_ros2::msg::RangeData ultrasonic_data_msg;
   ultrasonic_data_msg.type =
       wrp_ros2::msg::RangeData::RANGE_SENSOR_TYPE_ULTRASONIC;
-  for (size_t i = 0; i < sizeof(ultrasonic_data.data); i++) {
+  for (size_t i = 0; i < 8; i++) {
     wrp_ros2::msg::RangeDataType range_data;
-    range_data.id = ultrasonic_data.data[i].id;
-    range_data.threshold = ultrasonic_data.data[i].threshold;
-    range_data.range = ultrasonic_data.data[i].range;
+    range_data.id = static_cast<uint32_t>(ultrasonic_data.data[i].id);
+    range_data.threshold = static_cast<float>(ultrasonic_data.data[i].threshold);
+    range_data.range = static_cast<float>(ultrasonic_data.data[i].range);
     ultrasonic_data_msg.data[i] = range_data;
   }
   ultrasonic_publisher_->publish(ultrasonic_data_msg);
@@ -305,11 +312,11 @@ void MobileBaseNode::PublishSensorData() {
   // tof data
   wrp_ros2::msg::RangeData tof_data_msg;
   tof_data_msg.type = wrp_ros2::msg::RangeData::RANGE_SENSOR_TYPE_TOF;
-  for (size_t i = 0; i < sizeof(tof_data.data); i++) {
+  for (size_t i = 0; i < 8; i++) {
     wrp_ros2::msg::RangeDataType range_data;
-    range_data.id = tof_data.data[i].id;
-    range_data.threshold = tof_data.data[i].threshold;
-    range_data.range = tof_data.data[i].range;
+    range_data.id = static_cast<uint32_t>(tof_data.data[i].id);
+    range_data.threshold = static_cast<float>(tof_data.data[i].threshold);
+    range_data.range = static_cast<float>(tof_data.data[i].range);
     tof_data_msg.data[i] = range_data;
   }
   tof_publisher_->publish(tof_data_msg);
@@ -337,7 +344,8 @@ void MobileBaseNode::PublishWheelOdometry() {
   position_y_ += d_y;
   theta_ += d_theta;
 
-  geometry_msgs::msg::Quaternion odom_quat = MobileBaseNode::CreateQuaternionMsgFromYaw(theta_);
+  geometry_msgs::msg::Quaternion odom_quat =
+      MobileBaseNode::CreateQuaternionMsgFromYaw(theta_);
 
   // publish tf transformation
   geometry_msgs::msg::TransformStamped tf_msg;
@@ -370,7 +378,8 @@ void MobileBaseNode::PublishWheelOdometry() {
   odom_publisher_->publish(odom_msg);
 }
 
-geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(double yaw) {
+geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(
+    double yaw) {
   tf2::Quaternion q;
   q.setRPY(0, 0, yaw);
   return tf2::toMsg(q);
