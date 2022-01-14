@@ -1,0 +1,12 @@
+mobile_base_node:
+  ros__parameters:
+    # "weston" == weston robot base
+    # "agilex" == agilexV2 robot base
+    # "vbot"   == virtual weston robot base
+    robot_base_type: "weston"
+    can_device: "can0"
+    base_frame: "base_link"
+    odom_frame: "odom"
+    # true == always try to take control token
+    # false == only take using the access control service
+    auto_reconnect: true

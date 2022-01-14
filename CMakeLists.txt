@@ -15,6 +15,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/weston_robot/lib/cmake")
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -23,70 +25,95 @@ find_package(rmw_implementation_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 # interfaces
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(action_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 # wr packages
-find_package(wrp_zbus REQUIRED)
 find_package(wrp_sdk REQUIRED)
 
+# set all interface files
+set(message_files
+# mobile base
+"msg/mobile_base/ActuatorState.msg"
+"msg/mobile_base/ActuatorStateArray.msg"
+"msg/mobile_base/DriverState.msg"
+"msg/mobile_base/LightControlType.msg"
+"msg/mobile_base/MotionCommand.msg"
+"msg/mobile_base/MotionState.msg"
+"msg/mobile_base/MotorState.msg"
+"msg/mobile_base/RangeData.msg"
+"msg/mobile_base/RangeDataType.msg"
+"msg/mobile_base/RcState.msg"
+"msg/mobile_base/SystemState.msg")
+
+set(service_files
+# mobile base
+"srv/mobile_base/AccessControl.srv"
+"srv/mobile_base/AssistedModeControl.srv"
+"srv/mobile_base/LightControl.srv"
+"srv/mobile_base/MotionReset.srv")
+
+
 # generate interfaces
-# even though its called sdk_interfaces
-# headers generated are still wrp_ros2/msg/...
-rosidl_generate_interfaces(sdk_interfaces
-    "msg/LiftState.msg"
-    "action/LiftGoal.action"
+rosidl_generate_interfaces(${PROJECT_NAME}
+${message_files} ${service_files} ${action_files}  
   DEPENDENCIES
     builtin_interfaces
     std_msgs
     action_msgs
     sensor_msgs
-)
+    geometry_msgs
+    nav_msgs)
 
 ament_export_dependencies(rosidl_default_runtime)
 
-add_library(${PROJECT_NAME}
+add_library(wrp_sdk_ros2
+  #mobile base
+  src/mobile_base/mobile_base_node.cpp
   # peripheral device support
   src/peripheral/gps_receiver_node.cpp
   src/peripheral/imu_sensor_node.cpp
-  src/peripheral/lift_server_node.cpp)
-add_dependencies(${PROJECT_NAME} sdk_interfaces)
-rosidl_target_interfaces(${PROJECT_NAME} 
-  sdk_interfaces "rosidl_typesupport_cpp")
-target_link_libraries(${PROJECT_NAME}
-    westonrobot::wrp_sdk
-    westonrobot::wrp_zbus)
-target_include_directories(${PROJECT_NAME} PUBLIC
+)
+add_dependencies(wrp_sdk_ros2 ${PROJECT_NAME})
+rosidl_target_interfaces(wrp_sdk_ros2 
+  ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(wrp_sdk_ros2 westonrobot::wrp_sdk)
+target_include_directories(wrp_sdk_ros2 PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>)
-ament_target_dependencies(${PROJECT_NAME}
+ament_target_dependencies(wrp_sdk_ros2
   rclcpp
   rclcpp_action
   rclcpp_components
-  std_msgs)
+  tf2
+  builtin_interfaces
+  tf2_ros
+  tf2_geometry_msgs
+  std_msgs
+  action_msgs
+  sensor_msgs
+  geometry_msgs
+  nav_msgs)
 
 # create executables from library
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "wrp_ros2::GpsReceiverNode" EXECUTABLE gps_receiver_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "wrp_ros2::ImuSensorNode" EXECUTABLE imu_sensor_node)
-rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "wrp_ros2::LiftServerNode" EXECUTABLE lift_server_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
+rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::MobileBaseNode" EXECUTABLE mobile_base_node)
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS wrp_sdk_ros2
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-  
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}
-)
 
-install(DIRECTORY
-  config
-  DESTINATION share/${PROJECT_NAME}
-)
-
+install(DIRECTORY launch config urdf meshes
+  DESTINATION share/${PROJECT_NAME}/)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

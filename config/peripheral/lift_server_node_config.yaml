@@ -1,6 +1,0 @@
-lift_server_node:
-  ros__parameters:
-    device_path: "/dev/ttyUSB0" # uart port interface to lift
-    baud_rate: 115200
-    publish_interval: 500
-    command_preemption: true # if speed cmd can override an active goal cmd

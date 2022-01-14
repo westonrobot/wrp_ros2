@@ -24,8 +24,7 @@
 // ROS Messages
 #include "sensor_msgs/msg/imu.hpp"
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 class ImuSensorNode : public rclcpp::Node {
  public:
   ImuSensorNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
@@ -42,14 +41,14 @@ class ImuSensorNode : public rclcpp::Node {
   // ----- Published Messages-----
   sensor_msgs::msg::Imu imu_data_;
   // ----- Subscribers & Publishers -----
-  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
+  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr publisher_;
   // ----- Timers -----
-  rclcpp::TimerBase::SharedPtr loop_timer_;
   // ----- Callbacks -----
-  void PublishCallback();
+  void PublishCallback(ImuData imu_msg);
 
+  bool SetupImuSensor();
   bool ReadParameters();
 };
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
 #endif /* IMU_SENSOR_NODE_HPP */

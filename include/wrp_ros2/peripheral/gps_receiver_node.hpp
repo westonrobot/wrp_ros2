@@ -25,8 +25,7 @@
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 #include "sensor_msgs/msg/nav_sat_status.hpp"
 
-namespace wrp_ros2 {
-using namespace westonrobot;
+namespace westonrobot {
 
 class GpsReceiverNode : public rclcpp::Node {
  public:
@@ -44,15 +43,15 @@ class GpsReceiverNode : public rclcpp::Node {
   // ----- Published Messages-----
   sensor_msgs::msg::NavSatFix sat_fix_;
   // ----- Subscribers & Publishers -----
-  rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr pub_;
+  rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr publisher_;
   // ----- Timers -----
-  rclcpp::TimerBase::SharedPtr loop_timer_;
   // ----- Callbacks -----
-  void PublishCallback();
+  void PublishCallback(NavSatFix gps_fix);
 
+  bool SetupReceiver();
   bool ReadParameters();
 };
 
-}  // namespace wrp_ros2
+}  // namespace westonrobot
 
 #endif /* GPS_RECEIVER_NODE_HPP */
