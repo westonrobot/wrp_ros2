@@ -8,7 +8,6 @@
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #include "wrp_ros2/mobile_base/mobile_base_node.hpp"
-#include "rclcpp_components/register_node_macro.hpp"
 
 #include "wrp_sdk/mobile_base/westonrobot/mobile_base.hpp"
 #include "wrp_sdk/mobile_base/agilex/agilex_base_v2_adapter.hpp"
@@ -387,4 +386,10 @@ geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(
 
 }  // namespace westonrobot
 
-RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::MobileBaseNode)
+int main(int argc, char const *argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<westonrobot::MobileBaseNode>());
+  rclcpp::shutdown();
+  return 0;
+}

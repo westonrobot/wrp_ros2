@@ -9,7 +9,6 @@
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #include "wrp_ros2/peripheral/gps_receiver_node.hpp"
-#include "rclcpp_components/register_node_macro.hpp"
 using std::placeholders::_1;
 
 namespace westonrobot {
@@ -80,4 +79,10 @@ void GpsReceiverNode::PublishCallback(NavSatFix gps_fix) {
 
 }  // namespace westonrobot
 
-RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::GpsReceiverNode)
+int main(int argc, char const *argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<westonrobot::GpsReceiverNode>());
+  rclcpp::shutdown();
+  return 0;
+}
