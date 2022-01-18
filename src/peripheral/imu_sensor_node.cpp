@@ -8,7 +8,6 @@
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #include "wrp_ros2/peripheral/imu_sensor_node.hpp"
-#include "rclcpp_components/register_node_macro.hpp"
 using std::placeholders::_1;
 
 namespace westonrobot {
@@ -87,4 +86,10 @@ void ImuSensorNode::PublishCallback(ImuData imu_msg) {
 }
 }  // namespace westonrobot
 
-RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::ImuSensorNode)
+int main(int argc, char const *argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<westonrobot::ImuSensorNode>());
+  rclcpp::shutdown();
+  return 0;
+}

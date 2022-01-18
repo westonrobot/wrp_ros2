@@ -74,43 +74,61 @@ ${message_files} ${service_files} ${action_files}
 
 ament_export_dependencies(rosidl_default_runtime)
 
-add_library(wrp_sdk_ros2
-  #mobile base
-  src/mobile_base/mobile_base_node.cpp
-  # peripheral device support
-  src/peripheral/gps_receiver_node.cpp
-  src/peripheral/imu_sensor_node.cpp
+include_directories(
+  include
 )
-add_dependencies(wrp_sdk_ros2 ${PROJECT_NAME})
-rosidl_target_interfaces(wrp_sdk_ros2 
+
+# add_library(wrp_sdk_ros2
+#   #mobile base
+#   src/mobile_base/mobile_base_node.cpp
+#   # peripheral device support
+#   src/peripheral/gps_receiver_node.cpp
+#   src/peripheral/imu_sensor_node.cpp
+# )
+add_executable(gps_receiver_node src/peripheral/gps_receiver_node.cpp)
+add_dependencies(gps_receiver_node ${PROJECT_NAME})
+rosidl_target_interfaces(gps_receiver_node 
   ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(wrp_sdk_ros2 westonrobot::wrp_sdk)
-target_include_directories(wrp_sdk_ros2 PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-	$<INSTALL_INTERFACE:include>)
-ament_target_dependencies(wrp_sdk_ros2
+target_link_libraries(gps_receiver_node westonrobot::wrp_sdk)
+ament_target_dependencies(gps_receiver_node
   rclcpp
-  rclcpp_action
-  rclcpp_components
-  tf2
   builtin_interfaces
-  tf2_ros
-  tf2_geometry_msgs
   std_msgs
-  action_msgs
+  sensor_msgs)
+
+add_executable(imu_sensor_node src/peripheral/imu_sensor_node.cpp)
+add_dependencies(imu_sensor_node ${PROJECT_NAME})
+rosidl_target_interfaces(imu_sensor_node 
+  ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(imu_sensor_node westonrobot::wrp_sdk)
+ament_target_dependencies(imu_sensor_node
+  rclcpp
+  builtin_interfaces
+  std_msgs
+  sensor_msgs)
+
+add_executable(mobile_base_node src/mobile_base/mobile_base_node.cpp)
+add_dependencies(mobile_base_node ${PROJECT_NAME})
+rosidl_target_interfaces(mobile_base_node 
+  ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(mobile_base_node westonrobot::wrp_sdk)
+ament_target_dependencies(mobile_base_node
+  rclcpp
+  builtin_interfaces
+  std_msgs
   sensor_msgs
+  nav_msgs
   geometry_msgs
-  nav_msgs)
+  tf2
+  tf2_ros
+  tf2_geometry_msgs)
 
-# create executables from library
-rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::GpsReceiverNode" EXECUTABLE gps_receiver_node)
-rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::ImuSensorNode" EXECUTABLE imu_sensor_node)
-rclcpp_components_register_node(wrp_sdk_ros2 PLUGIN "westonrobot::MobileBaseNode" EXECUTABLE mobile_base_node)
-
-install(TARGETS wrp_sdk_ros2
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+install(TARGETS
+  gps_receiver_node 
+  imu_sensor_node
+  mobile_base_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY launch config urdf meshes
   DESTINATION share/${PROJECT_NAME}/)
