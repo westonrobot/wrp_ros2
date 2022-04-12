@@ -98,7 +98,7 @@ add_executable(mobile_base_node src/mobile_base/mobile_base_node.cpp)
 add_dependencies(mobile_base_node ${PROJECT_NAME})
 rosidl_target_interfaces(mobile_base_node 
   ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(mobile_base_node westonrobot::wrp_sdk)
+target_link_libraries(mobile_base_node westonrobot::wrp_sdk_robot)
 ament_target_dependencies(mobile_base_node
   rclcpp
   builtin_interfaces
