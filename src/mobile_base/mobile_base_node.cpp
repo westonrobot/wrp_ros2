@@ -116,9 +116,9 @@ bool MobileBaseNode::SetupInterfaces() {
   odom_publisher_ =
       this->create_publisher<nav_msgs::msg::Odometry>("/odom", 50);
   ultrasonic_publisher_ =
-      this->create_publisher<wrp_ros2::msg::RangeData>("/ultrasonic_data", 10);
+      this->create_publisher<wrp_ros2::msg::RangeDataArray>("/ultrasonic_data", 10);
   tof_publisher_ =
-      this->create_publisher<wrp_ros2::msg::RangeData>("/tof_data", 10);
+      this->create_publisher<wrp_ros2::msg::RangeDataArray>("/tof_data", 10);
 
   // setup services
   access_control_service_ = this->create_service<wrp_ros2::srv::AccessControl>(
@@ -240,8 +240,8 @@ void MobileBaseNode::PublishLoopCallback() {
     auto return_code = robot_->RequestControl();
     if (return_code != HandshakeReturnCode::kControlAcquired) {
       RCLCPP_WARN_STREAM(this->get_logger(),
-                            "Failed to gain control token, error code: "
-                                << static_cast<int>(return_code));
+                         "Failed to gain control token, error code: "
+                             << static_cast<int>(return_code));
     }
   }
   PublishRobotState();
@@ -296,27 +296,31 @@ void MobileBaseNode::PublishSensorData() {
   auto tof_data = robot_->GetTofData();
 
   // ultrasonic data
-  wrp_ros2::msg::RangeData ultrasonic_data_msg;
+  wrp_ros2::msg::RangeDataArray ultrasonic_data_msg;
   ultrasonic_data_msg.type =
-      wrp_ros2::msg::RangeData::RANGE_SENSOR_TYPE_ULTRASONIC;
-  for (size_t i = 0; i < 8; i++) {
-    wrp_ros2::msg::RangeDataType range_data;
-    range_data.id = static_cast<uint32_t>(ultrasonic_data.data[i].id);
-    range_data.threshold = static_cast<float>(ultrasonic_data.data[i].threshold);
-    range_data.range = static_cast<float>(ultrasonic_data.data[i].range);
-    ultrasonic_data_msg.data[i] = range_data;
+      wrp_ros2::msg::RangeDataArray::RANGE_SENSOR_TYPE_ULTRASONIC;
+  for (size_t i = 0; i < ultrasonic_data.size(); i++) {
+    wrp_ros2::msg::RangeData range_data;
+    range_data.id = i;
+    range_data.field_of_view = ultrasonic_data[i].field_of_view;
+    range_data.min_range = ultrasonic_data[i].min_range;
+    range_data.max_range = ultrasonic_data[i].max_range;
+    range_data.range = ultrasonic_data[i].range;
+    ultrasonic_data_msg.data.push_back(range_data);
   }
   ultrasonic_publisher_->publish(ultrasonic_data_msg);
 
   // tof data
-  wrp_ros2::msg::RangeData tof_data_msg;
-  tof_data_msg.type = wrp_ros2::msg::RangeData::RANGE_SENSOR_TYPE_TOF;
-  for (size_t i = 0; i < 8; i++) {
-    wrp_ros2::msg::RangeDataType range_data;
-    range_data.id = static_cast<uint32_t>(tof_data.data[i].id);
-    range_data.threshold = static_cast<float>(tof_data.data[i].threshold);
-    range_data.range = static_cast<float>(tof_data.data[i].range);
-    tof_data_msg.data[i] = range_data;
+  wrp_ros2::msg::RangeDataArray tof_data_msg;
+  tof_data_msg.type = wrp_ros2::msg::RangeDataArray::RANGE_SENSOR_TYPE_TOF;
+  for (size_t i = 0; i < tof_data.size(); i++) {
+    wrp_ros2::msg::RangeData range_data;
+    range_data.id = i;
+    range_data.field_of_view = tof_data[i].field_of_view;
+    range_data.min_range = tof_data[i].min_range;
+    range_data.max_range = tof_data[i].max_range;
+    range_data.range = tof_data[i].range;
+    tof_data_msg.data.push_back(range_data);
   }
   tof_publisher_->publish(tof_data_msg);
 }
@@ -386,8 +390,7 @@ geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(
 
 }  // namespace westonrobot
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<westonrobot::MobileBaseNode>());
   rclcpp::shutdown();

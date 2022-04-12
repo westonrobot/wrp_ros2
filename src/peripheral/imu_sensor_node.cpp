@@ -31,7 +31,7 @@ ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
 ImuSensorNode::~ImuSensorNode() {}
 
 bool ImuSensorNode::SetupImuSensor() {
-  imu_ = std::make_unique<ImuSensor>();
+  imu_ = std::make_unique<ImuSensorWit>();
   imu_->SetDataReceivedCallback(
       std::bind(&ImuSensorNode::PublishCallback, this, std::placeholders::_1));
   if (!imu_->Connect(device_path_, baud_rate_)) {
@@ -64,7 +64,7 @@ bool ImuSensorNode::ReadParameters() {
   return true;
 }
 
-void ImuSensorNode::PublishCallback(ImuData imu_msg) {
+void ImuSensorNode::PublishCallback(ImuMsg imu_msg) {
   imu_data_.header.stamp = this->get_clock()->now();
   imu_data_.header.frame_id = frame_id_;
   imu_data_.orientation.x = imu_msg.orientation.x;

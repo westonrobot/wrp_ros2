@@ -1,6 +1,5 @@
-uint8 RANGE_SENSOR_TYPE_TOF = 0
-uint8 RANGE_SENSOR_TYPE_ULTRASONIC = 1
-uint8 RANGE_SENSOR_TYPE_BUMPER = 2
-
-uint8 type
-RangeDataType[8] data
+uint32 id
+float32 field_of_view
+float32 min_range
+float32 max_range
+float32 range

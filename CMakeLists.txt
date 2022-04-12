@@ -36,7 +36,23 @@ find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 # wr packages
-find_package(wrp_sdk REQUIRED)
+find_package(wrp_sdk 1.0.0 REQUIRED)
+
+# Attempt to find lelycan libraries for peripheral nodes
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LelyIO QUIET IMPORTED_TARGET liblely-io2)
+pkg_check_modules(LelyCOAPP QUIET IMPORTED_TARGET liblely-coapp)
+
+set(BUILD_PERIPH_MODULE OFF)
+if(LelyIO_FOUND AND LelyCOAPP_FOUND)
+    message(STATUS "Lely-core libraries found, peripheral module will be included")
+    set(BUILD_PERIPH_MODULE ON)
+else()
+    message(WARNING "CANopen-related dependencies are not found, ROS nodes for peripherals will not be built. Run the following commands to install the missing libraries:
+    $ sudo apt-get install -y software-properties-common 
+    $ sudo add-apt-repository ppa:lely/ppa && sudo apt-get update
+    $ sudo apt-get install -y pkg-config liblely-coapp-dev liblely-co-tools")
+endif()
 
 # set all interface files
 set(message_files
@@ -48,8 +64,8 @@ set(message_files
 "msg/mobile_base/MotionCommand.msg"
 "msg/mobile_base/MotionState.msg"
 "msg/mobile_base/MotorState.msg"
+"msg/mobile_base/RangeDataArray.msg"
 "msg/mobile_base/RangeData.msg"
-"msg/mobile_base/RangeDataType.msg"
 "msg/mobile_base/RcState.msg"
 "msg/mobile_base/SystemState.msg")
 
@@ -78,35 +94,6 @@ include_directories(
   include
 )
 
-# add_library(wrp_sdk_ros2
-#   #mobile base
-#   src/mobile_base/mobile_base_node.cpp
-#   # peripheral device support
-#   src/peripheral/gps_receiver_node.cpp
-#   src/peripheral/imu_sensor_node.cpp
-# )
-add_executable(gps_receiver_node src/peripheral/gps_receiver_node.cpp)
-add_dependencies(gps_receiver_node ${PROJECT_NAME})
-rosidl_target_interfaces(gps_receiver_node 
-  ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(gps_receiver_node westonrobot::wrp_sdk)
-ament_target_dependencies(gps_receiver_node
-  rclcpp
-  builtin_interfaces
-  std_msgs
-  sensor_msgs)
-
-add_executable(imu_sensor_node src/peripheral/imu_sensor_node.cpp)
-add_dependencies(imu_sensor_node ${PROJECT_NAME})
-rosidl_target_interfaces(imu_sensor_node 
-  ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(imu_sensor_node westonrobot::wrp_sdk)
-ament_target_dependencies(imu_sensor_node
-  rclcpp
-  builtin_interfaces
-  std_msgs
-  sensor_msgs)
-
 add_executable(mobile_base_node src/mobile_base/mobile_base_node.cpp)
 add_dependencies(mobile_base_node ${PROJECT_NAME})
 rosidl_target_interfaces(mobile_base_node 
@@ -124,11 +111,39 @@ ament_target_dependencies(mobile_base_node
   tf2_geometry_msgs)
 
 install(TARGETS
-  gps_receiver_node 
-  imu_sensor_node
   mobile_base_node
   DESTINATION lib/${PROJECT_NAME}
 )
+
+if(BUILD_PERIPH_MODULE)
+  add_executable(gps_receiver_node src/peripheral/gps_receiver_node.cpp)
+  add_dependencies(gps_receiver_node ${PROJECT_NAME})
+  rosidl_target_interfaces(gps_receiver_node 
+    ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(gps_receiver_node westonrobot::wrp_sdk)
+  ament_target_dependencies(gps_receiver_node
+    rclcpp
+    builtin_interfaces
+    std_msgs
+    sensor_msgs)
+
+  add_executable(imu_sensor_node src/peripheral/imu_sensor_node.cpp)
+  add_dependencies(imu_sensor_node ${PROJECT_NAME})
+  rosidl_target_interfaces(imu_sensor_node 
+    ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(imu_sensor_node westonrobot::wrp_sdk)
+  ament_target_dependencies(imu_sensor_node
+    rclcpp
+    builtin_interfaces
+    std_msgs
+    sensor_msgs)
+
+  install(TARGETS
+    gps_receiver_node 
+    imu_sensor_node
+    DESTINATION lib/${PROJECT_NAME})
+endif()
+
 
 install(DIRECTORY launch config urdf meshes
   DESTINATION share/${PROJECT_NAME}/)
