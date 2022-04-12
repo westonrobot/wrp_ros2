@@ -103,37 +103,37 @@ bool MobileBaseNode::SetupInterfaces() {
 
   // setup subscribers
   motion_cmd_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>(
-      "/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
+      "~/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
 
   // setup publishers
   system_state_publisher_ =
-      this->create_publisher<wrp_ros2::msg::SystemState>("/system_state", 10);
+      this->create_publisher<wrp_ros2::msg::SystemState>("~/system_state", 10);
   motion_state_publisher_ =
-      this->create_publisher<wrp_ros2::msg::MotionState>("/motion_state", 10);
+      this->create_publisher<wrp_ros2::msg::MotionState>("~/motion_state", 10);
   actuator_state_publisher_ =
       this->create_publisher<wrp_ros2::msg::ActuatorStateArray>(
-          "/actuator_state", 10);
+          "~/actuator_state", 10);
   odom_publisher_ =
-      this->create_publisher<nav_msgs::msg::Odometry>("/odom", 50);
+      this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
   ultrasonic_publisher_ =
-      this->create_publisher<wrp_ros2::msg::RangeDataArray>("/ultrasonic_data", 10);
+      this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/ultrasonic_data", 10);
   tof_publisher_ =
-      this->create_publisher<wrp_ros2::msg::RangeDataArray>("/tof_data", 10);
+      this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/tof_data", 10);
 
   // setup services
   access_control_service_ = this->create_service<wrp_ros2::srv::AccessControl>(
-      "/access_control",
+      "~/access_control",
       std::bind(&MobileBaseNode::AccessControlCallback, this, _1, _2));
   assisted_mode_control_service_ =
       this->create_service<wrp_ros2::srv::AssistedModeControl>(
-          "/assisted_mode_control",
+          "~/assisted_mode_control",
           std::bind(&MobileBaseNode::AssistedModeControlCallback, this, _1,
                     _2));
   light_control_service_ = this->create_service<wrp_ros2::srv::LightControl>(
-      "/light_control",
+      "~/light_control",
       std::bind(&MobileBaseNode::LightControlCallback, this, _1, _2));
   motion_reset_service_ = this->create_service<wrp_ros2::srv::MotionReset>(
-      "/motion_reset",
+      "~/motion_reset",
       std::bind(&MobileBaseNode::MotionResetCallback, this, _1, _2));
 
   // setup timers

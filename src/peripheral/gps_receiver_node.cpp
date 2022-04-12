@@ -26,7 +26,7 @@ GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
   }
 
   publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>(
-      "/fix", 1);
+      "~/fix", 1);
 }
 
 GpsReceiverNode::~GpsReceiverNode() {}

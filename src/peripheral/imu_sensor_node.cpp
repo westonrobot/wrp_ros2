@@ -25,7 +25,7 @@ ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
   }
 
   publisher_ =
-      this->create_publisher<sensor_msgs::msg::Imu>("/imu_sensor/imu", 1);
+      this->create_publisher<sensor_msgs::msg::Imu>("~/imu", 1);
 }
 
 ImuSensorNode::~ImuSensorNode() {}
