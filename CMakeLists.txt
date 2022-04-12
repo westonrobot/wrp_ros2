@@ -138,9 +138,21 @@ if(BUILD_PERIPH_MODULE)
     std_msgs
     sensor_msgs)
 
+  add_executable(ultrasonic_sensor_node src/peripheral/ultrasonic_sensor_node.cpp)
+  add_dependencies(ultrasonic_sensor_node ${PROJECT_NAME})
+  rosidl_target_interfaces(ultrasonic_sensor_node 
+    ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(ultrasonic_sensor_node westonrobot::wrp_sdk)
+  ament_target_dependencies(ultrasonic_sensor_node
+    rclcpp
+    builtin_interfaces
+    std_msgs
+    sensor_msgs)
+
   install(TARGETS
     gps_receiver_node 
     imu_sensor_node
+    ultrasonic_sensor_node
     DESTINATION lib/${PROJECT_NAME})
 endif()
 
