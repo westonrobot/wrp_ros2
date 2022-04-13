@@ -37,7 +37,7 @@ bool UltrasonicSensorNode::ReadParameters() {
   this->declare_parameter<std::string>("sensor_model", "dyp_a05");
   this->declare_parameter<std::string>("device_path", "/dev/ttyUSB0");
   this->declare_parameter<int>("baud_rate", 115200);
-  this->declare_parameter<std::string>("frame_id", "ultrasonic");
+  this->declare_parameter<std::string>("frame_id", "ultrasonic_link");
   this->declare_parameter<std::string>("topic_name", "ultrasonic");
 
   // Get parameters

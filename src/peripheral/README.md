@@ -28,3 +28,16 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `device_path` | str  | Path to receiver port.<br />Default: "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00"<br /> |
 | `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"                                                                |
 | `frame_id`    | str  | Frame id used in /gps_receiver/navsat_fix's header.<br />Default: "gps_link"                                            |
+
+### ultrasonic_sensor_node
+| Published Topic      | Type                    | Description                         |
+| -------------------- | ----------------------- | ----------------------------------- |
+| `/<topic_name><num>` | sensor_msgs::msg::Range | Outputs the ultrasonic sensor data. |
+
+| Parameter      | Type | Description                                                                                   |
+| -------------- | ---- | --------------------------------------------------------------------------------------------- |
+| `sensor_model` | str  | Sensor's model <br />Default: "dyp_a05"<br />Supported: "dyp_a05", "w200d"                    |
+| `device_path`  | str  | Path to receiver port.<br />Default: "/dev/ttyUSB0"<br />                                     |
+| `baud_rate`    | int  | Sensor's communication baud rate.<br />Default: "115200"                                      |
+| `frame_id`     | str  | Frame id used in /ultrasonic_sensor_node/ultrasonic's header.<br />Default: "ultrasonic_link" |
+| `topic_name`   | str  | Topic name prefix used to publish data <br />Default: "ultrasonic"                            |

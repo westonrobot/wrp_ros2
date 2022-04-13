@@ -36,7 +36,21 @@ def generate_launch_description():
         )
     ])
 
+    ultrasonic_sensor_node = GroupAction([
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([os.path.join(get_package_share_directory("wrp_ros2"),
+                                                        "launch",
+                                                        "peripheral",
+                                                        "ultrasonic_sensor.launch.py")
+            ]),
+            launch_arguments={
+                'device_path': '/dev/ttyUSB0'
+            }.items()
+        )
+    ])
+
     ld.add_action(mobile_base_weston_node)
     ld.add_action(imu_sensor_node)
     ld.add_action(gps_receiver_node)
+    ld.add_action(ultrasonic_sensor_node)
     return ld

@@ -37,7 +37,7 @@ class UltrasonicSensorNode : public rclcpp::Node {
   std::string sensor_model_ = "dyp_a05";
   std::string device_path_ = "/dev/ttyUSB0";
   int baud_rate_ = 115200;
-  std::string frame_id_ = "ultrasonic";
+  std::string frame_id_ = "ultrasonic_link";
   std::string topic_name_ = "ultrasonic";
   // ----- Internal Variables -----
   std::shared_ptr<UltrasonicInterface> sensor_;

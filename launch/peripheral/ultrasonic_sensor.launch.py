@@ -23,7 +23,7 @@ def generate_launch_description():
     )
 
     frame_id_launch_arg = DeclareLaunchArgument(
-        "frame_id", default_value="ultrasonic",
+        "frame_id", default_value="ultrasonic_link",
         description="Ultrasonic frame id"
     )
 
