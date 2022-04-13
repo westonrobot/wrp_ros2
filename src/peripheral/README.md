@@ -41,3 +41,16 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `baud_rate`    | int  | Sensor's communication baud rate.<br />Default: "115200"                                      |
 | `frame_id`     | str  | Frame id used in /ultrasonic_sensor_node/ultrasonic's header.<br />Default: "ultrasonic_link" |
 | `topic_name`   | str  | Topic name prefix used to publish data <br />Default: "ultrasonic"                            |
+
+### power_regulator_node
+| Published Topic | Type                                     | Description                               |
+| --------------- | ---------------------------------------- | ----------------------------------------- |
+| `/state`        | wrp_ros2::msg::PowerRegulatorDeviceState | Outputs the power regulator device state. |
+
+| Service           | Type                                 | Description                               |
+| ----------------- | ------------------------------------ | ----------------------------------------- |
+| `/access_control` | wrp_ros2::srv::PowerRegulatorControl | (Dis)able power regulator output channels |
+
+| Parameter     | Type | Description                                       |
+| ------------- | ---- | ------------------------------------------------- |
+| `device_path` | str  | Path to receiver port.<br />Default: "can0"<br /> |
