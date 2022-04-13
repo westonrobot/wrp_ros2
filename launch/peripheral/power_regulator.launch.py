@@ -8,8 +8,8 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     device_path_launch_arg = DeclareLaunchArgument(
-        "device_path", default_value="/dev/ttyUSB0",
-        description="Path to receiver port"
+        "device_path", default_value="can0",
+        description="Path to power regulator can port"
     )
 
     node = Node(
