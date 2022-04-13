@@ -67,14 +67,21 @@ set(message_files
 "msg/mobile_base/RangeDataArray.msg"
 "msg/mobile_base/RangeData.msg"
 "msg/mobile_base/RcState.msg"
-"msg/mobile_base/SystemState.msg")
+"msg/mobile_base/SystemState.msg"
+# peripheral
+"msg/peripheral/PowerRegulatorChannelState.msg"
+"msg/peripheral/PowerRegulatorDeviceState.msg"
+)
 
 set(service_files
 # mobile base
 "srv/mobile_base/AccessControl.srv"
 "srv/mobile_base/AssistedModeControl.srv"
 "srv/mobile_base/LightControl.srv"
-"srv/mobile_base/MotionReset.srv")
+"srv/mobile_base/MotionReset.srv"
+# peripheral
+"srv/peripheral/PowerRegulatorControl.srv"
+)
 
 
 # generate interfaces
@@ -149,10 +156,22 @@ if(BUILD_PERIPH_MODULE)
     std_msgs
     sensor_msgs)
 
+  add_executable(power_regulator_node src/peripheral/power_regulator_node.cpp)
+  add_dependencies(power_regulator_node ${PROJECT_NAME})
+  rosidl_target_interfaces(power_regulator_node 
+    ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(power_regulator_node westonrobot::wrp_sdk)
+  ament_target_dependencies(power_regulator_node
+    rclcpp
+    builtin_interfaces
+    std_msgs
+    sensor_msgs)
+
   install(TARGETS
     gps_receiver_node 
     imu_sensor_node
     ultrasonic_sensor_node
+    power_regulator_node
     DESTINATION lib/${PROJECT_NAME})
 endif()
 
