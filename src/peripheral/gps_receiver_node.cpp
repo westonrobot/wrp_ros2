@@ -9,10 +9,8 @@
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #include "wrp_ros2/peripheral/gps_receiver_node.hpp"
-using std::placeholders::_1;
 
 namespace westonrobot {
-
 GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
     : Node("gps_receiver_node", options) {
   if (!GpsReceiverNode::ReadParameters()) {
@@ -20,31 +18,23 @@ GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
     rclcpp::shutdown();
   }
 
-  if (!GpsReceiverNode::SetupReceiver()) {
-    RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup GPS receiver!!");
+  if (!GpsReceiverNode::SetupInterfaces()) {
+    RCLCPP_ERROR_STREAM(this->get_logger(), "Could not setup ros interfaces");
     rclcpp::shutdown();
   }
 
-  publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>(
-      "~/fix", 1);
-}
-
-GpsReceiverNode::~GpsReceiverNode() {}
-
-bool GpsReceiverNode::SetupReceiver() {
-  receiver_ = std::make_unique<GpsReceiverNmea>();
-  receiver_->SetDataReceivedCallback(std::bind(
-      &GpsReceiverNode::PublishCallback, this, std::placeholders::_1));
-  if (!receiver_->Connect(device_path_, baud_rate_)) {
-    return false;
+  if (!GpsReceiverNode::SetupHardware()) {
+    RCLCPP_ERROR_STREAM(this->get_logger(), "Could not setup hardware");
+    rclcpp::shutdown();
   }
-
-  return true;
 }
 
 bool GpsReceiverNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("device_path", "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00");
+  this->declare_parameter<std::string>(
+      "device_path",
+      "/dev/serial/by-id/"
+      "usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00");
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<std::string>("frame_id", "gps_link");
 
@@ -65,7 +55,24 @@ bool GpsReceiverNode::ReadParameters() {
   return true;
 }
 
-void GpsReceiverNode::PublishCallback(NavSatFixMsg gps_fix) {
+bool GpsReceiverNode::SetupInterfaces() {
+  publisher_ = this->create_publisher<sensor_msgs::msg::NavSatFix>("~/fix", 5);
+
+  return true;
+}
+
+bool GpsReceiverNode::SetupHardware() {
+  receiver_ = std::make_unique<GpsReceiverNmea>();
+  receiver_->SetDataReceivedCallback(std::bind(
+      &GpsReceiverNode::PublishCallback, this, std::placeholders::_1));
+  if (!receiver_->Connect(device_path_, baud_rate_)) {
+    return false;
+  }
+
+  return true;
+}
+
+void GpsReceiverNode::PublishCallback(const NavSatFixMsg& gps_fix) {
   sat_fix_.header.stamp = this->get_clock()->now();
   sat_fix_.header.frame_id = frame_id_;
   sat_fix_.status.status = gps_fix.status.status;
@@ -79,8 +86,7 @@ void GpsReceiverNode::PublishCallback(NavSatFixMsg gps_fix) {
 
 }  // namespace westonrobot
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<westonrobot::GpsReceiverNode>());
   rclcpp::shutdown();

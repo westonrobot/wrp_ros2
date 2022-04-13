@@ -43,9 +43,10 @@ class UltrasonicSensorNode : public rclcpp::Node {
   std::shared_ptr<UltrasonicInterface> sensor_;
   // ----- Published Messages-----
   // ----- Subscribers & Publishers & Services -----
-  std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> publishers_;
+  std::vector<rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr>
+      publishers_;
   // ----- Callbacks -----
-  void PublishCallback(UltrasonicMsg imu_msg);
+  void PublishCallback(const UltrasonicMsg& imu_msg);
 
   bool ReadParameters();
   bool SetupHardware();

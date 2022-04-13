@@ -89,13 +89,13 @@ bool UltrasonicSensorNode::SetupInterfaces() {
   for (int i = 0; i < 8; ++i) {
     std::string topic_name = "~/" + topic_name_ + std::to_string(i);
     publishers_[i] =
-        this->create_publisher<sensor_msgs::msg::Range>(topic_name, 10);
+        this->create_publisher<sensor_msgs::msg::Range>(topic_name, 5);
   }
 
   return true;
 }
 
-void UltrasonicSensorNode::PublishCallback(UltrasonicMsg imu_msg) {
+void UltrasonicSensorNode::PublishCallback(const UltrasonicMsg& imu_msg) {
   sensor_msgs::msg::Range ultrasonic_msg;
   ultrasonic_msg.header.stamp = this->now();
 
@@ -113,8 +113,7 @@ void UltrasonicSensorNode::PublishCallback(UltrasonicMsg imu_msg) {
 
 }  // namespace westonrobot
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<westonrobot::UltrasonicSensorNode>());
   rclcpp::shutdown();

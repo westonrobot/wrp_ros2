@@ -28,7 +28,7 @@ namespace westonrobot {
 class ImuSensorNode : public rclcpp::Node {
  public:
   ImuSensorNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
-  ~ImuSensorNode();
+  ~ImuSensorNode(){};
 
  private:
   // ----- ROS Node Parameters -----
@@ -44,11 +44,11 @@ class ImuSensorNode : public rclcpp::Node {
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr publisher_;
   // ----- Timers -----
   // ----- Callbacks -----
-  void PublishCallback(ImuMsg imu_msg);
+  void PublishCallback(const ImuMsg& imu_msg);
 
-  bool SetupImuSensor();
   bool ReadParameters();
-};
+  bool SetupHardware();
+  bool SetupInterfaces();
+};  // ImuSensorNode
 }  // namespace westonrobot
-
 #endif /* IMU_SENSOR_NODE_HPP */

@@ -8,10 +8,8 @@
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #include "wrp_ros2/peripheral/imu_sensor_node.hpp"
-using std::placeholders::_1;
 
 namespace westonrobot {
-
 ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
     : Node("imu_sensor_node", options) {
   if (!ImuSensorNode::ReadParameters()) {
@@ -19,31 +17,21 @@ ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
     rclcpp::shutdown();
   }
 
-  if (!ImuSensorNode::SetupImuSensor()) {
-    RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup Imu Sensor!!");
+  if (!ImuSensorNode::SetupInterfaces()) {
+    RCLCPP_ERROR_STREAM(this->get_logger(), "Could not setup ros interfaces");
     rclcpp::shutdown();
   }
 
-  publisher_ =
-      this->create_publisher<sensor_msgs::msg::Imu>("~/imu", 1);
-}
-
-ImuSensorNode::~ImuSensorNode() {}
-
-bool ImuSensorNode::SetupImuSensor() {
-  imu_ = std::make_unique<ImuSensorWit>();
-  imu_->SetDataReceivedCallback(
-      std::bind(&ImuSensorNode::PublishCallback, this, std::placeholders::_1));
-  if (!imu_->Connect(device_path_, baud_rate_)) {
-    return false;
+  if (!ImuSensorNode::SetupHardware()) {
+    RCLCPP_ERROR_STREAM(this->get_logger(), "Could not setup hardware");
+    rclcpp::shutdown();
   }
-
-  return true;
 }
 
 bool ImuSensorNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("device_path", "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0");
+  this->declare_parameter<std::string>(
+      "device_path", "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0");
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<std::string>("frame_id", "imu");
 
@@ -64,7 +52,24 @@ bool ImuSensorNode::ReadParameters() {
   return true;
 }
 
-void ImuSensorNode::PublishCallback(ImuMsg imu_msg) {
+bool ImuSensorNode::SetupInterfaces() {
+  publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("~/imu", 5);
+
+  return true;
+}
+
+bool ImuSensorNode::SetupHardware() {
+  imu_ = std::make_unique<ImuSensorWit>();
+  imu_->SetDataReceivedCallback(
+      std::bind(&ImuSensorNode::PublishCallback, this, std::placeholders::_1));
+  if (!imu_->Connect(device_path_, baud_rate_)) {
+    return false;
+  }
+
+  return true;
+}
+
+void ImuSensorNode::PublishCallback(const ImuMsg& imu_msg) {
   imu_data_.header.stamp = this->get_clock()->now();
   imu_data_.header.frame_id = frame_id_;
   imu_data_.orientation.x = imu_msg.orientation.x;
@@ -85,9 +90,7 @@ void ImuSensorNode::PublishCallback(ImuMsg imu_msg) {
   publisher_->publish(imu_data_);
 }
 }  // namespace westonrobot
-
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<westonrobot::ImuSensorNode>());
   rclcpp::shutdown();
