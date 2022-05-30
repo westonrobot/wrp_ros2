@@ -8,7 +8,7 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     ld = LaunchDescription()
 
-    mobile_base_weston_node = IncludeLaunchDescription(
+    mobile_base_scout_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(get_package_share_directory("wrp_ros2"),
                                                     "launch",
                                                     "mobile_base",
@@ -23,5 +23,5 @@ def generate_launch_description():
         }.items(),
     )
 
-    ld.add_action(mobile_base_weston_node)
+    ld.add_action(mobile_base_scout_node)
     return ld

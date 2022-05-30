@@ -9,7 +9,6 @@ def generate_launch_description():
 
     # "weston" == weston robot base
     # "agilex" == agilexV2 robot base
-    # "vbot"   == virtual weston robot base
     robot_type_launch_arg = DeclareLaunchArgument(
         "robot_type", default_value="weston",
         description="Mobile base robot type"
