@@ -47,6 +47,7 @@ class MobileBaseNode : public rclcpp::Node {
   std::string base_frame_;
   std::string odom_frame_;
   bool auto_reconnect_;
+  std::string motion_type_;
   // ----- Internal Variables -----
   std::shared_ptr<MobileRobotInterface> robot_ = nullptr;
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
@@ -103,6 +104,7 @@ class MobileBaseNode : public rclcpp::Node {
   void PublishSensorData();
   void PublishWheelOdometry();
   geometry_msgs::msg::Quaternion CreateQuaternionMsgFromYaw(double yaw);
+  nav_msgs::msg::Odometry CalculateOdometry(geometry_msgs::msg::Twist robot_twist);
 };  // MobileBaseNode
 }  // namespace westonrobot
 #endif /* MOBILE_BASE_NODE_HPP */

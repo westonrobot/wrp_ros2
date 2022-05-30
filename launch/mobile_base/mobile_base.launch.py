@@ -30,6 +30,11 @@ def generate_launch_description():
         description="Odometry frame id"
     )
 
+    motion_type_launch_arg = DeclareLaunchArgument(
+        "motion_type", default_value="skid_steer",
+        description="Odometry frame id"
+    )
+
     # true == always try to take control token
     # false == only take using the access control service
     auto_reconnect_launch_arg = DeclareLaunchArgument(
@@ -48,6 +53,7 @@ def generate_launch_description():
             "base_frame": LaunchConfiguration("base_frame"),
             "odom_frame": LaunchConfiguration("odom_frame"),
             "auto_reconnect": LaunchConfiguration("auto_reconnect"),
+            "motion_type": LaunchConfiguration("motion_type"),
         }],
     )
 
@@ -56,5 +62,6 @@ def generate_launch_description():
     ld.add_action(base_frame_launch_arg)
     ld.add_action(odom_frame_launch_arg)
     ld.add_action(auto_reconnect_launch_arg)
+    ld.add_action(motion_type_launch_arg)
     ld.add_action(node)
     return ld

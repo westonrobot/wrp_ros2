@@ -19,6 +19,7 @@ def generate_launch_description():
             "base_frame": "base_link",
             "odom_frame": "odom",
             "auto_reconnect": "true",
+            "motion_type": "skid_steer",
         }.items(),
     )
 
