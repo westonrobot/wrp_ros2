@@ -18,6 +18,7 @@ def generate_launch_description():
             "can_device": "can0",
             "base_frame": "base_link",
             "odom_frame": "odom",
+            "odom_topic_remap": "~/odom",
             "auto_reconnect": "true",
             "motion_type": "differential",
         }.items(),

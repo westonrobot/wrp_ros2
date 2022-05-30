@@ -29,6 +29,11 @@ def generate_launch_description():
         description="Odometry frame id"
     )
 
+    odom_topic_remap_launch_arg = DeclareLaunchArgument(
+        "odom_topic_remap", default_value="odom",
+        description="Odometry publishing topic name"
+    )
+
     motion_type_launch_arg = DeclareLaunchArgument(
         "motion_type", default_value="skid_steer",
         description="Odometry frame id"
@@ -54,6 +59,9 @@ def generate_launch_description():
             "auto_reconnect": LaunchConfiguration("auto_reconnect"),
             "motion_type": LaunchConfiguration("motion_type"),
         }],
+        remappings=[
+            ("~/odom", LaunchConfiguration("odom_topic_remap")),
+        ],
     )
 
     ld.add_action(robot_type_launch_arg)
@@ -62,5 +70,6 @@ def generate_launch_description():
     ld.add_action(odom_frame_launch_arg)
     ld.add_action(auto_reconnect_launch_arg)
     ld.add_action(motion_type_launch_arg)
+    ld.add_action(odom_topic_remap_launch_arg)
     ld.add_action(node)
     return ld
