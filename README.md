@@ -1,93 +1,124 @@
 # wrp_ros2
 
-ROS2 Interface for wrp_sdk
+## About
 
-## Getting started
+This package contains a minimal wrapper around wrp_sdk and provides a ROS2 interface to hardware platforms from Weston Robot. Please first check if your device and environment are supported by the SDK and this ROS package before proceeding:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+**Supported Environments**:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+* Architecture: x86_64/arm64
+* OS: Ubuntu 20.04
+* ROS: Foxy
+  
+**Supported Robots**:
 
-## Add your files
+* Scout
+* Scout Mini
+* Tracer
 
-- [ ] [Create](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+**Supported Peripherals**:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/westonrobot/ros2/wrp_ros2.git
-git branch -M main
-git push -uf origin main
-```
+* Power Regulator V2.1
+* Ultrasonic Sensor
+* Hipnuc and WitMotion IMU
+* NMEA-compatible GPS Receiver
 
-## Integrate with your tools
+More details can be found in the README inside individual src sub-folders
 
-- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://gitlab.com/westonrobot/ros2/wrp_ros2/-/settings/integrations)
+  * [Mobile Base Node](./src/mobile_base)
+  * [Peripheral Nodes](./src/peripheral)
 
-## Collaborate with your team
+## Getting the package
 
-- [ ] [Invite team members and collaborators](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+### Install dependencies
 
-## Test and Deploy
+* wrp_sdk >= v1.0.2: please follow setup instructions from [here](https://github.com/westonrobot/wrp_sdk/tree/sample-v1.0.x)
 
-Use the built-in continuous integration in GitLab.
+### Build the package
 
-- [ ] [Get started with GitLab CI/CD](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+* Clone the packages into a colcon workspace and compile/source.  
+(the following instructions assume your catkin workspace is at: ~/ros2_ws/src)
 
-***
+    ```bash
+    mkdir -p ~/ros2_ws/src
+    cd ~/ros2_ws/src
+    git clone https://gitlab.com/westonrobot/ros2/wrp_ros2.git
+    cd ..
+    colcon build --symlink-install
+    . install/setup.bash
+    ```
 
-# Editing this README
+## Setup CAN-To-USB adapter
+ 
+1. Enable gs_usb kernel module
+    ```
+    $ sudo modprobe gs_usb
+    ```
+2. Bringup can device
+   ```
+   # (NOTE: refer to the following table for the correct bitrate)
+   $ sudo ip link set can0 up type can bitrate 500000
+   $ sudo ip link set can0 txqueuelen 1000
+   ```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://gitlab.com/-/experiment/new_project_readme_content:e901d64693185cdd0cac961fbbb38cdf?https://www.makeareadme.com/) for this template.
+    | Hardware                 | CAN Bitrate |
+    | ------------------------ | ----------- |
+    | Scout V2.0               | 500000      |
+    | Scout V2.5               | 1000000     |
+    | Scout Mini               | 500000      |
+    | Power Regulator          | 500000      |
+    | Otherwise if unspecified | 500000      |
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+3. If no error occured during the previous steps, you should be able to see the can device now by using command
+   ```
+   $ ifconfig -a
+   ```
+4. Install and use can-utils to test the hardware
+    ```
+    $ sudo apt install can-utils
+    ```
+5. Testing command
+    ```
+    # receiving data from can0
+    $ candump can0
+    # send data to can0
+    $ cansend can0 001#1122334455667788
+    ```
 
-## Name
-Choose a self-explaining name for your project.
+Scripts are provided [here](./scripts) for convenience. You can run "./setup_can2usb.bash" for the first-time setup and run "./bringup_can2usb_1m.bash" to bring up the device each time you unplug and re-plug the adapter.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Example Usage
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+You can find more information about robot base control from [this page](https://docs.westonrobot.net/getting_started/basics/robot_base_control.html).
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+**_You may need to change run time parameters by editing the corresponding launch file_**
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+1. Mobile Base Node (and [variants](./launch/mobile_base))
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+    ```bash
+    ros2 launch wrp_ros2 mobile_base.launch.py
+    ```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+2. Power Regulator Node
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+    ```bash
+    roslaunch wrp_ros power_regulator.launch.py
+    ```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+3. GPS Receiver Node
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+    ```bash
+    roslaunch wrp_ros gps_receiver_launch.py 
+    ```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+4. IMU Sensor Node
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+    ```bash
+    roslaunch wrp_ros imu_sensor_launch.py 
+    ```
 
-## License
-For open source projects, say how it is licensed.
+5. Ultrasonic Sensor Node
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
-
+    ```bash
+    roslaunch wrp_ros ultrasonic_sensor.launch.py
+    ```
