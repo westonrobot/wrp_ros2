@@ -10,8 +10,8 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    model_name = 'scout_v2.xacro'
-    model_path = os.path.join(get_package_share_directory('wrp_ros2'), "urdf", model_name)
+    model_name = 'scout_mini.xacro'
+    model_path = os.path.join(get_package_share_directory('wrp_ros2'), "urdf/scout_mini", model_name)
     print(model_path)
     return launch.LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='false',
@@ -25,6 +25,6 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'use_sim_time': launch.substitutions.LaunchConfiguration('use_sim_time'),
-                'robot_description':Command(['xacro',' ', model_path])
+                'robot_description':Command(['xacro' ,' ', model_path])
             }]),
     ])

@@ -9,7 +9,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/mini_base_link.dae"/>
+        <mesh filename="package://wrp_ros2/meshes/mini_base_link.dae"/>
       </geometry>
     </visual>
     <collision>
