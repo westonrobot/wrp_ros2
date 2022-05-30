@@ -1,12 +1,16 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-stages:
-- test
-sast:
-  stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
+## Build and test as colcon package
+foxy-colcon-build:
+  stage: build
+  image: rduweston/ubuntu-ci:foxy
+  before_script:
+    - apt-get update && apt-get -y install curl ros-$ROS_DISTRO-xacro
+    - echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release focal main" | tee /etc/apt/sources.list.d/weston-robot.list
+    - echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release focal next" | tee -a /etc/apt/sources.list.d/weston-robot.list
+    - curl -sSL 'https://westonrobot.jfrog.io/artifactory/api/security/keypair/wr-deb/public' | apt-key add -
+    - apt-get update && apt-get -y install wrp_sdk
+  script:
+    - mkdir -p /ros2_ws/src 
+    # clone/copy source to colcon workspace
+    - cp -r /builds/$CI_PROJECT_PATH /ros2_ws/src
+    # invoke colcon build
+    - cd /ros2_ws && /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash; colcon build"
