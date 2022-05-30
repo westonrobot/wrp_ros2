@@ -40,18 +40,18 @@ MobileBaseNode::MobileBaseNode(const rclcpp::NodeOptions& options)
 
 bool MobileBaseNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("robot_base_type", "weston");
   this->declare_parameter<std::string>("can_device", "can0");
+  this->declare_parameter<std::string>("robot_type", "weston");
   this->declare_parameter<std::string>("base_frame", "base_link");
   this->declare_parameter<std::string>("odom_frame", "odom");
   this->declare_parameter<bool>("auto_reconnect", true);
+  this->declare_parameter<std::string>("motion_type", "skid_steer");
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
 
-  this->get_parameter("robot_base_type", robot_base_type_);
-  RCLCPP_INFO_STREAM(this->get_logger(),
-                     "robot_base_type: " << robot_base_type_);
+  this->get_parameter("robot_type", robot_type_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "robot_type: " << robot_type_);
 
   this->get_parameter("can_device", can_device_);
   RCLCPP_INFO_STREAM(this->get_logger(), "can_device: " << can_device_);
@@ -65,6 +65,9 @@ bool MobileBaseNode::ReadParameters() {
   this->get_parameter("auto_reconnect", auto_reconnect_);
   RCLCPP_INFO_STREAM(this->get_logger(), "auto_reconnect: " << auto_reconnect_);
 
+  this->get_parameter("motion_type", motion_type_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "motion_type: " << motion_type_);
+
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   return true;
@@ -72,11 +75,11 @@ bool MobileBaseNode::ReadParameters() {
 
 bool MobileBaseNode::SetupRobot() {
   // Create appropriate adaptor
-  if (robot_base_type_ == "weston") {
+  if (robot_type_ == "weston") {
     robot_ = std::make_shared<MobileBase>();
-  } else if (robot_base_type_ == "agilex") {
+  } else if (robot_type_ == "agilex") {
     robot_ = std::make_shared<AgilexBaseV2Adapter>();
-  } else if (robot_base_type_ == "vbot") {
+  } else if (robot_type_ == "vbot") {
     robot_ = std::make_shared<MobileBase>(true);
   } else {
     RCLCPP_ERROR_STREAM(this->get_logger(),
@@ -113,11 +116,16 @@ bool MobileBaseNode::SetupInterfaces() {
   actuator_state_publisher_ =
       this->create_publisher<wrp_ros2::msg::ActuatorStateArray>(
           "~/actuator_state", 10);
+  battery_state_publisher_ =
+      this->create_publisher<sensor_msgs::msg::BatteryState>("~/battery_state",
+                                                             10);
+
   odom_publisher_ =
       this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
-  ultrasonic_publisher_ =
-      this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/ultrasonic_data", 10);
-  tof_publisher_ =
+  ultrasonic_data_publisher_ =
+      this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/ultrasonic_data",
+                                                            10);
+  tof_data_publisher_ =
       this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/tof_data", 10);
 
   // setup services
@@ -253,6 +261,7 @@ void MobileBaseNode::PublishRobotState() {
   auto system_state = robot_->GetSystemState();
   auto motion_state = robot_->GetMotionState();
   auto actuator_state = robot_->GetActuatorState();
+  auto battery_state = robot_->GetBatteryState();
 
   // system state
   wrp_ros2::msg::SystemState system_state_msg;
@@ -285,9 +294,37 @@ void MobileBaseNode::PublishRobotState() {
   for (size_t i = 0; i < actuator_state.size(); ++i) {
     wrp_ros2::msg::ActuatorState actuator_msg;
     actuator_msg.id = actuator_state[i].id;
+    actuator_msg.motor.rpm = actuator_state[i].motor.rpm;
+    actuator_msg.motor.current = actuator_state[i].motor.current;
+    actuator_msg.motor.pulse_count = actuator_state[i].motor.pulse_count;
+    actuator_msg.driver.driver_voltage =
+        actuator_state[i].driver.driver_voltage;
+    actuator_msg.driver.driver_temperature =
+        actuator_state[i].driver.driver_temperature;
+    actuator_msg.driver.motor_temperature =
+        actuator_state[i].driver.motor_temperature;
+    actuator_msg.driver.driver_state = actuator_state[i].driver.driver_state;
     actuator_state_msg.states.push_back(actuator_msg);
   }
   actuator_state_publisher_->publish(actuator_state_msg);
+
+  // battery state
+  sensor_msgs::msg::BatteryState battery_state_msg;
+  battery_state_msg.header.stamp = this->now();
+  battery_state_msg.voltage = battery_state.voltage;
+  battery_state_msg.current = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.charge = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.capacity = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.design_capacity = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.percentage = battery_state.percentage / 100.0f;
+  battery_state_msg.power_supply_status =
+      sensor_msgs::msg::BatteryState::POWER_SUPPLY_STATUS_UNKNOWN;
+  battery_state_msg.power_supply_health =
+      sensor_msgs::msg::BatteryState::POWER_SUPPLY_HEALTH_UNKNOWN;
+  battery_state_msg.power_supply_technology =
+      sensor_msgs::msg::BatteryState::POWER_SUPPLY_TECHNOLOGY_LION;
+  battery_state_msg.present = battery_state.present;
+  battery_state_publisher_->publish(battery_state_msg);
 }
 
 void MobileBaseNode::PublishSensorData() {
@@ -308,7 +345,7 @@ void MobileBaseNode::PublishSensorData() {
     range_data.range = ultrasonic_data[i].range;
     ultrasonic_data_msg.data.push_back(range_data);
   }
-  ultrasonic_publisher_->publish(ultrasonic_data_msg);
+  ultrasonic_data_publisher_->publish(ultrasonic_data_msg);
 
   // tof data
   wrp_ros2::msg::RangeDataArray tof_data_msg;
@@ -322,25 +359,56 @@ void MobileBaseNode::PublishSensorData() {
     range_data.range = tof_data[i].range;
     tof_data_msg.data.push_back(range_data);
   }
-  tof_publisher_->publish(tof_data_msg);
+  tof_data_publisher_->publish(tof_data_msg);
 }
 
 void MobileBaseNode::PublishWheelOdometry() {
   // TODO calculate odometry according to robot type
   auto robot_odom = robot_->GetOdometry();
 
+  // ATTN: odometry directly from wrp_sdk still in progress
+  geometry_msgs::msg::Twist robot_twist;
+  robot_twist.linear.x = robot_odom.linear.x;
+  robot_twist.linear.y = robot_odom.linear.y;
+  robot_twist.linear.z = robot_odom.linear.z;
+  robot_twist.angular.x = robot_odom.angular.x;
+  robot_twist.angular.y = robot_odom.angular.y;
+  robot_twist.angular.z = robot_odom.angular.z;
+
+  nav_msgs::msg::Odometry odom_msg =
+      MobileBaseNode::CalculateOdometry(robot_twist);
+
+  // publish tf transformation
+  geometry_msgs::msg::TransformStamped tf_msg;
+  tf_msg.header.stamp = odom_msg.header.stamp;
+  tf_msg.header.frame_id = odom_msg.header.frame_id;
+  tf_msg.child_frame_id = odom_msg.child_frame_id;
+
+  tf_msg.transform.translation.x = odom_msg.pose.pose.position.x;
+  tf_msg.transform.translation.y = odom_msg.pose.pose.position.y;
+  tf_msg.transform.translation.z = 0.0;
+  tf_msg.transform.rotation = odom_msg.pose.pose.orientation;
+
+  tf_broadcaster_->sendTransform(tf_msg);
+  odom_publisher_->publish(odom_msg);
+}
+
+nav_msgs::msg::Odometry MobileBaseNode::CalculateOdometry(
+    geometry_msgs::msg::Twist robot_twist) {
   auto current_time = this->now();
   float dt = (current_time - last_time_).seconds();
   last_time_ = current_time;
 
-  // if last_time is too old, reset calculation
-  if (dt > 10 * loop_period_) return;
+  // TODO: perform calculation based on robot type & wheel base other than scout
+  // & scout mini
+  double linear_speed = robot_twist.linear.x;
+  double angular_speed = robot_twist.angular.z;
+  double lateral_speed = robot_twist.linear.y;
 
-  auto linear_speed = robot_odom.linear.x;
-  auto angular_speed = robot_odom.angular.z;
-
-  double d_x = linear_speed * std::cos(theta_) * dt;
-  double d_y = linear_speed * std::sin(theta_) * dt;
+  double d_x =
+      (linear_speed * std::cos(theta_) - lateral_speed * std::sin(theta_)) * dt;
+  double d_y =
+      (linear_speed * std::sin(theta_) + lateral_speed * std::cos(theta_)) * dt;
   double d_theta = angular_speed * dt;
 
   position_x_ += d_x;
@@ -349,19 +417,6 @@ void MobileBaseNode::PublishWheelOdometry() {
 
   geometry_msgs::msg::Quaternion odom_quat =
       MobileBaseNode::CreateQuaternionMsgFromYaw(theta_);
-
-  // publish tf transformation
-  geometry_msgs::msg::TransformStamped tf_msg;
-  tf_msg.header.stamp = current_time;
-  tf_msg.header.frame_id = odom_frame_;
-  tf_msg.child_frame_id = base_frame_;
-
-  tf_msg.transform.translation.x = position_x_;
-  tf_msg.transform.translation.y = position_y_;
-  tf_msg.transform.translation.z = 0.0;
-  tf_msg.transform.rotation = odom_quat;
-
-  tf_broadcaster_->sendTransform(tf_msg);
 
   // publish odometry and tf messages
   nav_msgs::msg::Odometry odom_msg;
@@ -378,7 +433,7 @@ void MobileBaseNode::PublishWheelOdometry() {
   odom_msg.twist.twist.linear.y = 0.0;
   odom_msg.twist.twist.angular.z = angular_speed;
 
-  odom_publisher_->publish(odom_msg);
+  return odom_msg;
 }
 
 geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(

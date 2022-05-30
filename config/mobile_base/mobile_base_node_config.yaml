@@ -3,7 +3,7 @@ mobile_base_node:
     # "weston" == weston robot base
     # "agilex" == agilexV2 robot base
     # "vbot"   == virtual weston robot base
-    robot_base_type: "weston"
+    robot_type: "weston"
     can_device: "can0"
     base_frame: "base_link"
     odom_frame: "odom"

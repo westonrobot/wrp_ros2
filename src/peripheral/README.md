@@ -47,9 +47,9 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | --------------- | ---------------------------------------- | ----------------------------------------- |
 | `/state`        | wrp_ros2::msg::PowerRegulatorDeviceState | Outputs the power regulator device state. |
 
-| Service           | Type                                 | Description                               |
-| ----------------- | ------------------------------------ | ----------------------------------------- |
-| `/access_control` | wrp_ros2::srv::PowerRegulatorControl | (Dis)able power regulator output channels |
+| Service | Type                                 | Description                               |
+| ------- | ------------------------------------ | ----------------------------------------- |
+| `/cmd`  | wrp_ros2::srv::PowerRegulatorControl | (Dis)able power regulator output channels |
 
 | Parameter     | Type | Description                                       |
 | ------------- | ---- | ------------------------------------------------- |

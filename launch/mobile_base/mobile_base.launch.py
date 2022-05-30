@@ -9,9 +9,8 @@ def generate_launch_description():
 
     # "weston" == weston robot base
     # "agilex" == agilexV2 robot base
-    # "vbot"   == virtual weston robot base
-    robot_base_type_launch_arg = DeclareLaunchArgument(
-        "robot_base_type", default_value="weston",
+    robot_type_launch_arg = DeclareLaunchArgument(
+        "robot_type", default_value="weston",
         description="Mobile base robot type"
     )
 
@@ -30,6 +29,16 @@ def generate_launch_description():
         description="Odometry frame id"
     )
 
+    odom_topic_remap_launch_arg = DeclareLaunchArgument(
+        "odom_topic_remap", default_value="odom",
+        description="Odometry publishing topic name"
+    )
+
+    motion_type_launch_arg = DeclareLaunchArgument(
+        "motion_type", default_value="skid_steer",
+        description="Odometry frame id"
+    )
+
     # true == always try to take control token
     # false == only take using the access control service
     auto_reconnect_launch_arg = DeclareLaunchArgument(
@@ -43,18 +52,24 @@ def generate_launch_description():
         executable="mobile_base_node",
         output="screen",
         parameters=[{
-            "robot_base_type": LaunchConfiguration("robot_base_type"),
+            "robot_type": LaunchConfiguration("robot_type"),
             "can_device": LaunchConfiguration("can_device"),
             "base_frame": LaunchConfiguration("base_frame"),
             "odom_frame": LaunchConfiguration("odom_frame"),
             "auto_reconnect": LaunchConfiguration("auto_reconnect"),
+            "motion_type": LaunchConfiguration("motion_type"),
         }],
+        remappings=[
+            ("~/odom", LaunchConfiguration("odom_topic_remap")),
+        ],
     )
 
-    ld.add_action(robot_base_type_launch_arg)
+    ld.add_action(robot_type_launch_arg)
     ld.add_action(can_device_launch_arg)
     ld.add_action(base_frame_launch_arg)
     ld.add_action(odom_frame_launch_arg)
     ld.add_action(auto_reconnect_launch_arg)
+    ld.add_action(motion_type_launch_arg)
+    ld.add_action(odom_topic_remap_launch_arg)
     ld.add_action(node)
     return ld

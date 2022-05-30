@@ -9,12 +9,12 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     ld = LaunchDescription()
 
-    mobile_base_weston_node = GroupAction([
+    mobile_base_scout_node = GroupAction([
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([os.path.join(get_package_share_directory("wrp_ros2"),
                                                         "launch",
                                                         "mobile_base",
-                                                        "mobile_base_weston.launch.py")]),
+                                                        "scout.launch.py")]),
         )
     ])
 
@@ -49,7 +49,7 @@ def generate_launch_description():
         )
     ])
 
-    ld.add_action(mobile_base_weston_node)
+    ld.add_action(mobile_base_scout_node)
     ld.add_action(imu_sensor_node)
     ld.add_action(gps_receiver_node)
     ld.add_action(ultrasonic_sensor_node)
