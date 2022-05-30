@@ -7,8 +7,8 @@ This package contains a minimal wrapper around wrp_sdk and provides a ROS2 inter
 **Supported Environments**:
 
 * Architecture: x86_64/arm64
-* OS: Ubuntu 18.04/20.04
-* ROS: Melodic/Noetic
+* OS: Ubuntu 20.04
+* ROS: Foxy
   
 **Supported Robots**:
 
