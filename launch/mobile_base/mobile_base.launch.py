@@ -10,8 +10,8 @@ def generate_launch_description():
     # "weston" == weston robot base
     # "agilex" == agilexV2 robot base
     # "vbot"   == virtual weston robot base
-    robot_base_type_launch_arg = DeclareLaunchArgument(
-        "robot_base_type", default_value="weston",
+    robot_type_launch_arg = DeclareLaunchArgument(
+        "robot_type", default_value="weston",
         description="Mobile base robot type"
     )
 
@@ -43,7 +43,7 @@ def generate_launch_description():
         executable="mobile_base_node",
         output="screen",
         parameters=[{
-            "robot_base_type": LaunchConfiguration("robot_base_type"),
+            "robot_type": LaunchConfiguration("robot_type"),
             "can_device": LaunchConfiguration("can_device"),
             "base_frame": LaunchConfiguration("base_frame"),
             "odom_frame": LaunchConfiguration("odom_frame"),
@@ -51,7 +51,7 @@ def generate_launch_description():
         }],
     )
 
-    ld.add_action(robot_base_type_launch_arg)
+    ld.add_action(robot_type_launch_arg)
     ld.add_action(can_device_launch_arg)
     ld.add_action(base_frame_launch_arg)
     ld.add_action(odom_frame_launch_arg)

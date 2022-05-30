@@ -40,8 +40,8 @@ MobileBaseNode::MobileBaseNode(const rclcpp::NodeOptions& options)
 
 bool MobileBaseNode::ReadParameters() {
   // Declare default parameters
-  this->declare_parameter<std::string>("robot_base_type", "weston");
   this->declare_parameter<std::string>("can_device", "can0");
+  this->declare_parameter<std::string>("robot_type", "weston");
   this->declare_parameter<std::string>("base_frame", "base_link");
   this->declare_parameter<std::string>("odom_frame", "odom");
   this->declare_parameter<bool>("auto_reconnect", true);
@@ -49,9 +49,9 @@ bool MobileBaseNode::ReadParameters() {
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
 
-  this->get_parameter("robot_base_type", robot_base_type_);
+  this->get_parameter("robot_type", robot_type_);
   RCLCPP_INFO_STREAM(this->get_logger(),
-                     "robot_base_type: " << robot_base_type_);
+                     "robot_type: " << robot_type_);
 
   this->get_parameter("can_device", can_device_);
   RCLCPP_INFO_STREAM(this->get_logger(), "can_device: " << can_device_);
@@ -72,11 +72,11 @@ bool MobileBaseNode::ReadParameters() {
 
 bool MobileBaseNode::SetupRobot() {
   // Create appropriate adaptor
-  if (robot_base_type_ == "weston") {
+  if (robot_type_ == "weston") {
     robot_ = std::make_shared<MobileBase>();
-  } else if (robot_base_type_ == "agilex") {
+  } else if (robot_type_ == "agilex") {
     robot_ = std::make_shared<AgilexBaseV2Adapter>();
-  } else if (robot_base_type_ == "vbot") {
+  } else if (robot_type_ == "vbot") {
     robot_ = std::make_shared<MobileBase>(true);
   } else {
     RCLCPP_ERROR_STREAM(this->get_logger(),

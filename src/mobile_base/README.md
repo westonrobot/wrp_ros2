@@ -4,6 +4,18 @@
 
 ROS2 wrappers around wrp_sdk peripheral drivers.
 
+## Support
+
+### Robot platforms
+| Robot Platform | Robot Base Type | CAN Bitrate | Support             |
+| -------------- | --------------- | ----------- | ------------------- |
+| Scout          | "weston"        | 1000000     | Supported           |
+| Scout Mini     | "agilex"        | 500000      | Supported           |
+| Hunter         | "agilex"        | 500000      | Not fully supported |
+| Tracer         | "agilex"        | 500000      | Supported           |
+| Bunker         | "agilex"        | 500000      | Not fully supported |
+| Ranger Mini    | "agilex"        | 500000      | Not fully supported |
+
 ## Nodes
 
 ### mobile_base_node
@@ -27,10 +39,10 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `/light_control`         | wrp_ros2::srv::LightControl        | Control robot's lights                  |
 | `/motion_reset`          | wrp_ros2::srv::MotionReset         | Reset wheel position or odometry values |
 
-| Parameter         | Type | Description                                                                            |
-| ----------------- | ---- | -------------------------------------------------------------------------------------- |
-| `robot_base_type` | str  | Robot base type.<br/>Default: "/dev/ttyUSB0"<br/>Supported: "weston", "agilex" & "vbot |
-| `can_device`      | str  | Robot's CAN port.<br/>Default: "can0"                                                  |
-| `base_frame`      | str  | Base frame id.<br/>Default: "base_link"<br/>                                           |
-| `odom_frame`      | str  | Odometry frame id.<br />Default: "odom"                                                |
-| `auto_reconnect`  | bool | Automatically attempt to gain control token.<br />Default: true                        |
+| Parameter        | Type | Description                                                              |
+| ---------------- | ---- | ------------------------------------------------------------------------ |
+| `robot_type`     | str  | Robot base type.<br/>Default: "weston"<br/>Supported: "weston", "agilex" |
+| `can_device`     | str  | Robot's CAN port.<br/>Default: "can0"                                    |
+| `base_frame`     | str  | Base frame id.<br/>Default: "base_link"<br/>                             |
+| `odom_frame`     | str  | Odometry frame id.<br />Default: "odom"                                  |
+| `auto_reconnect` | bool | Automatically attempt to gain control token.<br />Default: true          |

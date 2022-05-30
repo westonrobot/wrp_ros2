@@ -42,7 +42,7 @@ class MobileBaseNode : public rclcpp::Node {
 
  private:
   // ----- ROS Node Parameters -----
-  std::string robot_base_type_;
+  std::string robot_type_;
   std::string can_device_;
   std::string base_frame_;
   std::string odom_frame_;

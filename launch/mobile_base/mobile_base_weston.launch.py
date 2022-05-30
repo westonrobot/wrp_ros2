@@ -14,7 +14,7 @@ def generate_launch_description():
                                                     "mobile_base",
                                                     "mobile_base.launch.py")]),
         launch_arguments={
-            "robot_base_type": "weston",
+            "robot_type": "weston",
             "can_device": "can0",
             "base_frame": "base_link",
             "odom_frame": "odom",
