@@ -21,6 +21,7 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <sensor_msgs/msg/battery_state.hpp>
 #include "wrp_ros2/msg/system_state.hpp"
 #include "wrp_ros2/msg/motion_state.hpp"
 #include "wrp_ros2/msg/actuator_state_array.hpp"
@@ -38,7 +39,7 @@ namespace westonrobot {
 class MobileBaseNode : public rclcpp::Node {
  public:
   MobileBaseNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
-  ~MobileBaseNode() {};
+  ~MobileBaseNode(){};
 
  private:
   // ----- ROS Node Parameters -----
@@ -56,7 +57,7 @@ class MobileBaseNode : public rclcpp::Node {
   float position_x_ = 0.0;
   float position_y_ = 0.0;
   float theta_ = 0.0;
-  float loop_period_ = 0.02; // in secs
+  float loop_period_ = 0.02;  // in secs
   // ----- Published Messages-----
   // ----- Subscribers & Publishers & Services -----
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr
@@ -68,9 +69,13 @@ class MobileBaseNode : public rclcpp::Node {
       motion_state_publisher_;
   rclcpp::Publisher<wrp_ros2::msg::ActuatorStateArray>::SharedPtr
       actuator_state_publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr
+      battery_state_publisher_;
+
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
-  rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr tof_publisher_;
-  rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr ultrasonic_publisher_;
+  rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr tof_data_publisher_;
+  rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr
+      ultrasonic_data_publisher_;
 
   rclcpp::Service<wrp_ros2::srv::AccessControl>::SharedPtr
       access_control_service_;
@@ -104,7 +109,8 @@ class MobileBaseNode : public rclcpp::Node {
   void PublishSensorData();
   void PublishWheelOdometry();
   geometry_msgs::msg::Quaternion CreateQuaternionMsgFromYaw(double yaw);
-  nav_msgs::msg::Odometry CalculateOdometry(geometry_msgs::msg::Twist robot_twist);
+  nav_msgs::msg::Odometry CalculateOdometry(
+      geometry_msgs::msg::Twist robot_twist);
 };  // MobileBaseNode
 }  // namespace westonrobot
 #endif /* MOBILE_BASE_NODE_HPP */

@@ -25,6 +25,7 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `/motion_state`    | wrp_ros2::msg::MotionState        | Outputs robot's motion state        |
 | `/actuator_state`  | wrp_ros2::msg::ActuatorStateArray | Outputs robot's actuator states     |
 | `/odom`            | nav_msgs::msg::Odometry           | Outputs robot's wheel odometry      |
+| `/battery_state`   | sensor_msgs::msg::BatteryState    | Outputs robot's battery state       |
 | `/ultrasonic_data` | wrp_ros2::msg::RangeData          | Outputs robot's ultrasonic readings |
 | `/tof_data`        | wrp_ros2::msg::RangeData          | Outputs robot's tof readings        |
 

@@ -116,11 +116,16 @@ bool MobileBaseNode::SetupInterfaces() {
   actuator_state_publisher_ =
       this->create_publisher<wrp_ros2::msg::ActuatorStateArray>(
           "~/actuator_state", 10);
+  battery_state_publisher_ =
+      this->create_publisher<sensor_msgs::msg::BatteryState>("~/battery_state",
+                                                             10);
+
   odom_publisher_ =
       this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
-  ultrasonic_publisher_ = this->create_publisher<wrp_ros2::msg::RangeDataArray>(
-      "~/ultrasonic_data", 10);
-  tof_publisher_ =
+  ultrasonic_data_publisher_ =
+      this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/ultrasonic_data",
+                                                            10);
+  tof_data_publisher_ =
       this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/tof_data", 10);
 
   // setup services
@@ -256,6 +261,7 @@ void MobileBaseNode::PublishRobotState() {
   auto system_state = robot_->GetSystemState();
   auto motion_state = robot_->GetMotionState();
   auto actuator_state = robot_->GetActuatorState();
+  auto battery_state = robot_->GetBatteryState();
 
   // system state
   wrp_ros2::msg::SystemState system_state_msg;
@@ -288,9 +294,37 @@ void MobileBaseNode::PublishRobotState() {
   for (size_t i = 0; i < actuator_state.size(); ++i) {
     wrp_ros2::msg::ActuatorState actuator_msg;
     actuator_msg.id = actuator_state[i].id;
+    actuator_msg.motor.rpm = actuator_state[i].motor.rpm;
+    actuator_msg.motor.current = actuator_state[i].motor.current;
+    actuator_msg.motor.pulse_count = actuator_state[i].motor.pulse_count;
+    actuator_msg.driver.driver_voltage =
+        actuator_state[i].driver.driver_voltage;
+    actuator_msg.driver.driver_temperature =
+        actuator_state[i].driver.driver_temperature;
+    actuator_msg.driver.motor_temperature =
+        actuator_state[i].driver.motor_temperature;
+    actuator_msg.driver.driver_state = actuator_state[i].driver.driver_state;
     actuator_state_msg.states.push_back(actuator_msg);
   }
   actuator_state_publisher_->publish(actuator_state_msg);
+
+  // battery state
+  sensor_msgs::msg::BatteryState battery_state_msg;
+  battery_state_msg.header.stamp = this->now();
+  battery_state_msg.voltage = battery_state.voltage;
+  battery_state_msg.current = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.charge = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.capacity = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.design_capacity = std::numeric_limits<float>::quiet_NaN();
+  battery_state_msg.percentage = battery_state.percentage / 100.0f;
+  battery_state_msg.power_supply_status =
+      sensor_msgs::msg::BatteryState::POWER_SUPPLY_STATUS_UNKNOWN;
+  battery_state_msg.power_supply_health =
+      sensor_msgs::msg::BatteryState::POWER_SUPPLY_HEALTH_UNKNOWN;
+  battery_state_msg.power_supply_technology =
+      sensor_msgs::msg::BatteryState::POWER_SUPPLY_TECHNOLOGY_LION;
+  battery_state_msg.present = battery_state.present;
+  battery_state_publisher_->publish(battery_state_msg);
 }
 
 void MobileBaseNode::PublishSensorData() {
@@ -311,7 +345,7 @@ void MobileBaseNode::PublishSensorData() {
     range_data.range = ultrasonic_data[i].range;
     ultrasonic_data_msg.data.push_back(range_data);
   }
-  ultrasonic_publisher_->publish(ultrasonic_data_msg);
+  ultrasonic_data_publisher_->publish(ultrasonic_data_msg);
 
   // tof data
   wrp_ros2::msg::RangeDataArray tof_data_msg;
@@ -325,7 +359,7 @@ void MobileBaseNode::PublishSensorData() {
     range_data.range = tof_data[i].range;
     tof_data_msg.data.push_back(range_data);
   }
-  tof_publisher_->publish(tof_data_msg);
+  tof_data_publisher_->publish(tof_data_msg);
 }
 
 void MobileBaseNode::PublishWheelOdometry() {
