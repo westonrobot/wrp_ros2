@@ -5,7 +5,10 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    ld = LaunchDescription()
+
+    sim_time_launch_arg = DeclareLaunchArgument(
+        "use_sim_time", default_value="false",
+        description='Use simulation clock if true')
 
     device_path_launch_arg = DeclareLaunchArgument(
         "device_path", default_value="/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_GNSS_receiver-if00",
@@ -28,14 +31,17 @@ def generate_launch_description():
         executable="gps_receiver_node",
         output="screen",
         parameters=[{
-                "device_path": LaunchConfiguration("device_path"),
-                "baud_rate": LaunchConfiguration("baud_rate"),
-                "frame_id": LaunchConfiguration("frame_id"),
+            "device_path": LaunchConfiguration("device_path"),
+            "baud_rate": LaunchConfiguration("baud_rate"),
+            "frame_id": LaunchConfiguration("frame_id"),
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
         }],
     )
 
-    ld.add_action(device_path_launch_arg)
-    ld.add_action(baud_rate_launch_arg)
-    ld.add_action(frame_id_launch_arg)
-    ld.add_action(node)
-    return ld
+    return LaunchDescription([
+        sim_time_launch_arg,
+        device_path_launch_arg,
+        baud_rate_launch_arg,
+        frame_id_launch_arg,
+        node,
+    ])
