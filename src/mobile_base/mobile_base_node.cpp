@@ -396,7 +396,7 @@ void MobileBaseNode::PublishWheelOdometry() {
 nav_msgs::msg::Odometry MobileBaseNode::CalculateOdometry(
     geometry_msgs::msg::Twist robot_twist) {
   auto current_time = this->now();
-  float dt = (current_time - last_time_).seconds();
+  double dt = (current_time - last_time_).seconds();
   last_time_ = current_time;
 
   // TODO: perform calculation based on robot type & wheel base other than scout
