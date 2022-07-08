@@ -19,7 +19,7 @@
 #include "rclcpp/time.hpp"
 
 // wrp_sdk
-#include "wrp_sdk/peripheral/imu_sensor_wit.hpp"
+#include "wrp_sdk/interface/imu_interface.hpp"
 
 // ROS Messages
 #include "sensor_msgs/msg/imu.hpp"
@@ -37,7 +37,7 @@ class ImuSensorNode : public rclcpp::Node {
   int baud_rate_;
   std::string frame_id_;
   // ----- Internal Variables -----
-  std::unique_ptr<ImuSensorWit> imu_;
+  std::unique_ptr<ImuInterface> imu_;
   // ----- Published Messages-----
   sensor_msgs::msg::Imu imu_data_;
   // ----- Subscribers & Publishers -----

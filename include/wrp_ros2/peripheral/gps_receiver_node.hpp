@@ -19,7 +19,7 @@
 #include "rclcpp/time.hpp"
 
 // wrp_sdk
-#include "wrp_sdk/peripheral/gps_receiver_nmea.hpp"
+#include "wrp_sdk/interface/gps_interface.hpp"
 
 // ROS Messages
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
@@ -38,7 +38,7 @@ class GpsReceiverNode : public rclcpp::Node {
   int baud_rate_;
   std::string frame_id_;
   // ----- Internal Variables -----
-  std::unique_ptr<GpsReceiverNmea> receiver_;
+  std::unique_ptr<GpsInterface> receiver_;
   // ----- Published Messages-----
   sensor_msgs::msg::NavSatFix sat_fix_;
   // ----- Subscribers & Publishers -----
