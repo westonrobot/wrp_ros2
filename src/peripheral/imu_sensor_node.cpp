@@ -8,6 +8,7 @@
  * Copyright (c) 2021 Weston Robot Pte. Ltd.
  */
 #include "wrp_ros2/peripheral/imu_sensor_node.hpp"
+#include "wrp_sdk/peripheral/imu_sensor_wit.hpp"
 
 namespace westonrobot {
 ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
