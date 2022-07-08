@@ -150,8 +150,8 @@ if(BUILD_PERIPH_MODULE)
   if ($ENV{ROS_DISTRO} STREQUAL "humble")
     target_link_libraries(imu_sensor_node westonrobot::wrp_sdk_peripheral "${cpp_typesupport_target}")
   else()
-    rosidl_target_interfaces(gps_receiver_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(gps_receiver_node westonrobot::wrp_sdk_peripheral)
+    rosidl_target_interfaces(imu_sensor_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    target_link_libraries(imu_sensor_node westonrobot::wrp_sdk_peripheral)
   endif()
   ament_target_dependencies(imu_sensor_node
     rclcpp
@@ -163,8 +163,8 @@ if(BUILD_PERIPH_MODULE)
   if ($ENV{ROS_DISTRO} STREQUAL "humble")
     target_link_libraries(ultrasonic_sensor_node westonrobot::wrp_sdk_peripheral "${cpp_typesupport_target}")
   else()
-    rosidl_target_interfaces(gps_receiver_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(gps_receiver_node westonrobot::wrp_sdk_peripheral)
+    rosidl_target_interfaces(ultrasonic_sensor_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    target_link_libraries(ultrasonic_sensor_node westonrobot::wrp_sdk_peripheral)
   endif()
   ament_target_dependencies(ultrasonic_sensor_node
     rclcpp
@@ -176,8 +176,8 @@ if(BUILD_PERIPH_MODULE)
   if ($ENV{ROS_DISTRO} STREQUAL "humble")
   target_link_libraries(power_regulator_node westonrobot::wrp_sdk_peripheral "${cpp_typesupport_target}")
   else()
-    rosidl_target_interfaces(gps_receiver_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(gps_receiver_node westonrobot::wrp_sdk_peripheral)
+    rosidl_target_interfaces(power_regulator_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    target_link_libraries(power_regulator_node westonrobot::wrp_sdk_peripheral)
   endif()
   ament_target_dependencies(power_regulator_node
     rclcpp
