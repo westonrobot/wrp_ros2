@@ -112,6 +112,7 @@ endif()
 add_executable(mobile_base_node src/mobile_base/mobile_base_node.cpp)
 if ($ENV{ROS_DISTRO} STREQUAL "humble")
   target_link_libraries(mobile_base_node westonrobot::wrp_sdk_robot "${cpp_typesupport_target}")
+  target_compile_definitions(mobile_base_node PRIVATE "TF2_CPP_HEADERS")
 else()
   rosidl_target_interfaces(mobile_base_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
   target_link_libraries(mobile_base_node westonrobot::wrp_sdk_robot)
@@ -126,6 +127,8 @@ ament_target_dependencies(mobile_base_node
   tf2
   tf2_ros
   tf2_geometry_msgs)
+
+
 
 install(TARGETS
   mobile_base_node
