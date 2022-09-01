@@ -13,6 +13,7 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 
 | Parameter     | Type | Description                                                                                 |
 | ------------- | ---- | ------------------------------------------------------------------------------------------- |
+| `sensor_model` | str  | IMU sensor model.<br />Default: "wit"<br />Supported: "wit", "hipnuc" |
 | `device_path` | str  | Path to sensor port.<br />Default: "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"<br /> |
 | `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"                                    |
 | `frame_id`    | str  | Frame id used in /imu_sensor/imu's header.<br />Default: "imu_link"                         |

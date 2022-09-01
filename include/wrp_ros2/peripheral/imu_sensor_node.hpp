@@ -32,8 +32,8 @@ class ImuSensorNode : public rclcpp::Node {
 
  private:
   // ----- ROS Node Parameters -----
+  std::string sensor_model_;
   std::string device_path_;
-  int publish_interval_;
   int baud_rate_;
   std::string frame_id_;
   // ----- Internal Variables -----
