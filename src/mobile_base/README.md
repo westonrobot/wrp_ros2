@@ -21,13 +21,13 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 ### mobile_base_node
 | Published Topic    | Type                              | Description                         |
 | ------------------ | --------------------------------- | ----------------------------------- |
-| `/system_state`    | wrp_ros2::msg::SystemState        | Outputs robot's system state        |
-| `/motion_state`    | wrp_ros2::msg::MotionState        | Outputs robot's motion state        |
-| `/actuator_state`  | wrp_ros2::msg::ActuatorStateArray | Outputs robot's actuator states     |
-| `/odom`            | nav_msgs::msg::Odometry           | Outputs robot's wheel odometry      |
-| `/battery_state`   | sensor_msgs::msg::BatteryState    | Outputs robot's battery state       |
-| `/ultrasonic_data` | wrp_ros2::msg::RangeData          | Outputs robot's ultrasonic readings |
-| `/tof_data`        | wrp_ros2::msg::RangeData          | Outputs robot's tof readings        |
+| `~/system_state`    | wrp_ros2::msg::SystemState        | Outputs robot's system state        |
+| `~/motion_state`    | wrp_ros2::msg::MotionState        | Outputs robot's motion state        |
+| `~/actuator_state`  | wrp_ros2::msg::ActuatorStateArray | Outputs robot's actuator states     |
+| `~/odom`            | nav_msgs::msg::Odometry           | Outputs robot's wheel odometry      |
+| `~/battery_state`   | sensor_msgs::msg::BatteryState    | Outputs robot's battery state       |
+| `~/ultrasonic_data` | wrp_ros2::msg::RangeData          | Outputs robot's ultrasonic readings |
+| `~/tof_data`        | wrp_ros2::msg::RangeData          | Outputs robot's tof readings        |
 
 | Subscribed Topic | Type                      | Description              |
 | ---------------- | ------------------------- | ------------------------ |
@@ -35,10 +35,10 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 
 | Service                  | Type                               | Description                             |
 | ------------------------ | ---------------------------------- | --------------------------------------- |
-| `/access_control`        | wrp_ros2::srv::AccessControl       | (Re)Gain or Renounce control token      |
-| `/assisted_mode_control` | wrp_ros2::srv::AssistedModeControl | (En/Dis)able Assisted mode              |
-| `/light_control`         | wrp_ros2::srv::LightControl        | Control robot's lights                  |
-| `/motion_reset`          | wrp_ros2::srv::MotionReset         | Reset wheel position or odometry values |
+| `~/access_control`        | wrp_ros2::srv::AccessControl       | (Re)Gain or Renounce control token      |
+| `~/assisted_mode_control` | wrp_ros2::srv::AssistedModeControl | (En/Dis)able Assisted mode              |
+| `~/light_control`         | wrp_ros2::srv::LightControl        | Control robot's lights                  |
+| `~/motion_reset`          | wrp_ros2::srv::MotionReset         | Reset wheel position or odometry values |
 
 | Parameter        | Type | Description                                                                                         |
 | ---------------- | ---- | --------------------------------------------------------------------------------------------------- |

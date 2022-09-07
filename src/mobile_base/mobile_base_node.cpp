@@ -110,7 +110,7 @@ bool MobileBaseNode::SetupInterfaces() {
 
   // setup subscribers
   motion_cmd_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>(
-      "~/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
+      "/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
 
   // setup publishers
   system_state_publisher_ =
