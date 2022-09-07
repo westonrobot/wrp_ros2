@@ -48,6 +48,7 @@ class MobileBaseNode : public rclcpp::Node {
   std::string base_frame_;
   std::string odom_frame_;
   bool auto_reconnect_;
+  bool publish_odom_;
   std::string motion_type_;
   // ----- Internal Variables -----
   std::shared_ptr<MobileRobotInterface> robot_ = nullptr;

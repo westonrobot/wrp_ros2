@@ -19,8 +19,8 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 ## Nodes
 
 ### mobile_base_node
-| Published Topic    | Type                              | Description                         |
-| ------------------ | --------------------------------- | ----------------------------------- |
+| Published Topic     | Type                              | Description                         |
+| ------------------- | --------------------------------- | ----------------------------------- |
 | `~/system_state`    | wrp_ros2::msg::SystemState        | Outputs robot's system state        |
 | `~/motion_state`    | wrp_ros2::msg::MotionState        | Outputs robot's motion state        |
 | `~/actuator_state`  | wrp_ros2::msg::ActuatorStateArray | Outputs robot's actuator states     |
@@ -33,8 +33,8 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | ---------------- | ------------------------- | ------------------------ |
 | `/cmd_vel`       | geometry_msgs::msg::Twist | Control robot's movement |
 
-| Service                  | Type                               | Description                             |
-| ------------------------ | ---------------------------------- | --------------------------------------- |
+| Service                   | Type                               | Description                             |
+| ------------------------- | ---------------------------------- | --------------------------------------- |
 | `~/access_control`        | wrp_ros2::srv::AccessControl       | (Re)Gain or Renounce control token      |
 | `~/assisted_mode_control` | wrp_ros2::srv::AssistedModeControl | (En/Dis)able Assisted mode              |
 | `~/light_control`         | wrp_ros2::srv::LightControl        | Control robot's lights                  |
@@ -45,6 +45,7 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `robot_type`     | str  | Robot base type.<br/>Default: "weston"<br/>Supported: "weston", "agilex"                            |
 | `can_device`     | str  | Robot's CAN port.<br/>Default: "can0"                                                               |
 | `base_frame`     | str  | Base frame id.<br/>Default: "base_link"<br/>                                                        |
-| `odom_frame`     | str  | Odometry frame id.<br />Default: "odom"                                                             |
+| `odom_frame`     | str  | Wheel odometry frame id (when publishing odometry).<br />Default: "odom"                            |
 | `auto_reconnect` | bool | Automatically attempt to gain control token.<br />Default: true                                     |
+| `publish_odom`   | bool | If node should publish wheel odometry.<br />Default: true                                           |
 | `motion_type`    | str  | Robot's motion type. <br/>Default: "skid_steer"<br/>Supported: "skid_steer", "omni", "differential" |
