@@ -18,9 +18,10 @@ def generate_launch_description():
             "can_device": "can0",
             "base_frame": "base_link",
             "odom_frame": "odom",
-            "odom_topic_remap": "~/odom",
+            "publish_odom": "true",
             "auto_reconnect": "true",
             "motion_type": "skid_steer",
+            "odom_topic_remap": "~/odom",
         }.items(),
     )
 

@@ -49,6 +49,11 @@ def generate_launch_description():
         description="Control token access control"
     )
 
+    publish_odom_launch_arg = DeclareLaunchArgument(
+        "publish_odom", default_value="true",
+        description="Control token access control"
+    )
+
     node = Node(
         package="wrp_ros2",
         name="mobile_base_node",
@@ -60,6 +65,7 @@ def generate_launch_description():
             "base_frame": LaunchConfiguration("base_frame"),
             "odom_frame": LaunchConfiguration("odom_frame"),
             "auto_reconnect": LaunchConfiguration("auto_reconnect"),
+            "publish_odom": LaunchConfiguration("publish_odom"),
             "motion_type": LaunchConfiguration("motion_type"),
             "use_sim_time": LaunchConfiguration("use_sim_time"),
         }],
@@ -77,5 +83,6 @@ def generate_launch_description():
         auto_reconnect_launch_arg,
         motion_type_launch_arg,
         odom_topic_remap_launch_arg,
+        publish_odom_launch_arg,
         node,
     ])
