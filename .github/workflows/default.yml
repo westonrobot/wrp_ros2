@@ -50,6 +50,8 @@ jobs:
           apt-get update && apt-get -y install pkg-config liblely-coapp-dev liblely-co-tools
       - name: Install ROS dependencies
         run: |
+          apt-get install -y python3-rosdep
+          rosdep init
           cd ${GITHUB_WORKSPACE}/colcon_ws
           source /opt/ros/${ROS_DISTRO}/setup.bash
           rosdep update
