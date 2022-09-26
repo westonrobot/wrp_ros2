@@ -9,6 +9,9 @@
  */
 #include "wrp_ros2/peripheral/imu_sensor_node.hpp"
 
+#include "wrp_sdk/peripheral/imu_sensor_wit.hpp"
+#include "wrp_sdk/peripheral/imu_sensor_hipnuc.hpp"
+
 namespace westonrobot {
 ImuSensorNode::ImuSensorNode(const rclcpp::NodeOptions& options)
     : Node("imu_sensor_node", options) {
@@ -32,11 +35,19 @@ bool ImuSensorNode::ReadParameters() {
   // Declare default parameters
   this->declare_parameter<std::string>(
       "device_path", "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0");
+  this->declare_parameter<std::string>("sensor_model", "wit");
   this->declare_parameter<int>("baud_rate", 115200);
   this->declare_parameter<std::string>("frame_id", "imu");
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
+
+  this->get_parameter("sensor_model", sensor_model_);
+  if (sensor_model_ != "wit" && sensor_model_ != "hipnuc") {
+    RCLCPP_WARN_STREAM(this->get_logger(), "Invalid IMU sensor model detected, defaulting to \"wit\"!!!!!!!!!");
+    sensor_model_ = "wit";
+  }
+  RCLCPP_INFO_STREAM(this->get_logger(), "sensor_model: " << sensor_model_);
 
   this->get_parameter("device_path", device_path_);
   RCLCPP_INFO_STREAM(this->get_logger(), "device_path: " << device_path_);
@@ -59,7 +70,14 @@ bool ImuSensorNode::SetupInterfaces() {
 }
 
 bool ImuSensorNode::SetupHardware() {
-  imu_ = std::make_unique<ImuSensorWit>();
+
+  if (sensor_model_ == "hipnuc") {
+    imu_ = std::make_unique<ImuSensorHipnuc>();
+  } else {
+    imu_ = std::make_unique<ImuSensorWit>();
+  }
+
+
   imu_->SetDataReceivedCallback(
       std::bind(&ImuSensorNode::PublishCallback, this, std::placeholders::_1));
   if (!imu_->Connect(device_path_, baud_rate_)) {

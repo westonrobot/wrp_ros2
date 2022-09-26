@@ -15,7 +15,11 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/transform_datatypes.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#ifdef TF2_CPP_HEADERS
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#endif
 using namespace std::placeholders;
 
 namespace westonrobot {
@@ -45,6 +49,7 @@ bool MobileBaseNode::ReadParameters() {
   this->declare_parameter<std::string>("base_frame", "base_link");
   this->declare_parameter<std::string>("odom_frame", "odom");
   this->declare_parameter<bool>("auto_reconnect", true);
+  this->declare_parameter<bool>("publish_odom", true);
   this->declare_parameter<std::string>("motion_type", "skid_steer");
 
   // Get parameters
@@ -64,6 +69,9 @@ bool MobileBaseNode::ReadParameters() {
 
   this->get_parameter("auto_reconnect", auto_reconnect_);
   RCLCPP_INFO_STREAM(this->get_logger(), "auto_reconnect: " << auto_reconnect_);
+
+  this->get_parameter("publish_odom", publish_odom_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "publish_odom: " << publish_odom_);
 
   this->get_parameter("motion_type", motion_type_);
   RCLCPP_INFO_STREAM(this->get_logger(), "motion_type: " << motion_type_);
@@ -101,12 +109,9 @@ bool MobileBaseNode::SetupRobot() {
 }
 
 bool MobileBaseNode::SetupInterfaces() {
-  // setup tf broadcaster
-  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
-
   // setup subscribers
   motion_cmd_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>(
-      "~/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
+      "/cmd_vel", 5, std::bind(&MobileBaseNode::MotionCmdCallback, this, _1));
 
   // setup publishers
   system_state_publisher_ =
@@ -120,8 +125,13 @@ bool MobileBaseNode::SetupInterfaces() {
       this->create_publisher<sensor_msgs::msg::BatteryState>("~/battery_state",
                                                              10);
 
-  odom_publisher_ =
-      this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
+  if (publish_odom_) {
+    // setup tf broadcaster
+    tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+
+    odom_publisher_ =
+        this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
+  }
   ultrasonic_data_publisher_ =
       this->create_publisher<wrp_ros2::msg::RangeDataArray>("~/ultrasonic_data",
                                                             10);
@@ -254,7 +264,9 @@ void MobileBaseNode::PublishLoopCallback() {
   }
   PublishRobotState();
   PublishSensorData();
-  PublishWheelOdometry();
+  if (publish_odom_) {
+    PublishWheelOdometry();
+  }
 }
 
 void MobileBaseNode::PublishRobotState() {
@@ -396,7 +408,7 @@ void MobileBaseNode::PublishWheelOdometry() {
 nav_msgs::msg::Odometry MobileBaseNode::CalculateOdometry(
     geometry_msgs::msg::Twist robot_twist) {
   auto current_time = this->now();
-  float dt = (current_time - last_time_).seconds();
+  double dt = (current_time - last_time_).seconds();
   last_time_ = current_time;
 
   // TODO: perform calculation based on robot type & wheel base other than scout

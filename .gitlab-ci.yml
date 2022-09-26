@@ -3,11 +3,12 @@ foxy-colcon-build:
   stage: build
   image: rduweston/ubuntu-ci:foxy
   before_script:
-    - apt-get update && apt-get -y install curl ros-$ROS_DISTRO-xacro
+    - apt-get update && apt-get -y install curl ros-$ROS_DISTRO-xacro software-properties-common
+    - add-apt-repository ppa:lely/ppa
     - echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release focal main" | tee /etc/apt/sources.list.d/weston-robot.list
     - echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release focal next" | tee -a /etc/apt/sources.list.d/weston-robot.list
     - curl -sSL 'https://westonrobot.jfrog.io/artifactory/api/security/keypair/wr-deb/public' | apt-key add -
-    - apt-get update && apt-get -y install wrp_sdk
+    - apt-get update && apt-get -y install wrp_sdk pkg-config liblely-coapp-dev liblely-co-tools
   script:
     - mkdir -p /ros2_ws/src 
     # clone/copy source to colcon workspace

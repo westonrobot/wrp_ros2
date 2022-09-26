@@ -10,6 +10,8 @@
  */
 #include "wrp_ros2/peripheral/gps_receiver_node.hpp"
 
+#include "wrp_sdk/peripheral/gps_receiver_nmea.hpp"
+
 namespace westonrobot {
 GpsReceiverNode::GpsReceiverNode(const rclcpp::NodeOptions& options)
     : Node("gps_receiver_node", options) {

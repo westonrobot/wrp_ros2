@@ -5,7 +5,10 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    ld = LaunchDescription()
+
+    sim_time_launch_arg = DeclareLaunchArgument(
+        "use_sim_time", default_value="false",
+        description='Use simulation clock if true')
 
     # "weston" == weston robot base
     # "agilex" == agilexV2 robot base
@@ -46,6 +49,11 @@ def generate_launch_description():
         description="Control token access control"
     )
 
+    publish_odom_launch_arg = DeclareLaunchArgument(
+        "publish_odom", default_value="true",
+        description="Control token access control"
+    )
+
     node = Node(
         package="wrp_ros2",
         name="mobile_base_node",
@@ -57,19 +65,24 @@ def generate_launch_description():
             "base_frame": LaunchConfiguration("base_frame"),
             "odom_frame": LaunchConfiguration("odom_frame"),
             "auto_reconnect": LaunchConfiguration("auto_reconnect"),
+            "publish_odom": LaunchConfiguration("publish_odom"),
             "motion_type": LaunchConfiguration("motion_type"),
+            "use_sim_time": LaunchConfiguration("use_sim_time"),
         }],
         remappings=[
             ("~/odom", LaunchConfiguration("odom_topic_remap")),
         ],
     )
 
-    ld.add_action(robot_type_launch_arg)
-    ld.add_action(can_device_launch_arg)
-    ld.add_action(base_frame_launch_arg)
-    ld.add_action(odom_frame_launch_arg)
-    ld.add_action(auto_reconnect_launch_arg)
-    ld.add_action(motion_type_launch_arg)
-    ld.add_action(odom_topic_remap_launch_arg)
-    ld.add_action(node)
-    return ld
+    return LaunchDescription([
+        sim_time_launch_arg,
+        robot_type_launch_arg,
+        can_device_launch_arg,
+        base_frame_launch_arg,
+        odom_frame_launch_arg,
+        auto_reconnect_launch_arg,
+        motion_type_launch_arg,
+        odom_topic_remap_launch_arg,
+        publish_odom_launch_arg,
+        node,
+    ])
