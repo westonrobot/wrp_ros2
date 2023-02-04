@@ -1,12 +1,14 @@
 /**
- * mobile_base_node.cpp
- *
- * Created on Tue Dec 21 2021 11:21:19
- *
- * Description:
- *
- * Copyright (c) 2021 Weston Robot Pte. Ltd.
+ * @file scout_virtual_node.cpp
+ * @author Muhammad Syamim (Syazam33@gmail.com)
+ * @brief Virtual Node for Weston Robot SCOUT in Gazebo
+ * @version 0.1
+ * @date 2023-02-03
+ * 
+ * @copyright Copyright (c) 2023
+ * 
  */
+
 #include "wrp_ros2/mobile_base/mobile_base_node.hpp"
 
 #include "wrp_sdk/mobile_base/westonrobot/mobile_base.hpp"
@@ -96,18 +98,15 @@ bool MobileBaseNode::SetupRobot() {
     return false;
   }
 
-  if(robot_type_ != "vbot"){
-    // Connect to robot through can device
-    if (!robot_->Connect(can_device_)) {
-      RCLCPP_ERROR_STREAM(
-          this->get_logger(),
-          "Failed to connect to robot through port: " << can_device_);
-      return false;
-    }
-  }else{
-    RCLCPP_INFO_STREAM(this->get_logger(), "Skipping Port Connection for virtual node");
-  }
-  
+    RCLCPP_INFO_STREAM(this->get_logger(), "Skipping Port Connection for virtual node\n");
+
+  // Connect to robot through can device
+//   if (!robot_->Connect(can_device_)) {
+//     RCLCPP_ERROR_STREAM(
+//         this->get_logger(),
+//         "Failed to connect to robot through port: " << can_device_);
+//     return false;
+//   }
 
   last_time_ = this->now();
   return true;
@@ -178,9 +177,8 @@ void MobileBaseNode::MotionCmdCallback(
   cmd.angular.y = msg->angular.y;
   cmd.angular.z = msg->angular.z;
 
-  if (robot_->SdkHasControlToken() || robot_type_ == "vbot") {
+  if (robot_->SdkHasControlToken()) {
     robot_->SetMotionCommand(cmd);
-    RCLCPP_INFO_STREAM(this->get_logger(), "Sent{ linear X: " << cmd.linear.x << " angular Z:" << cmd.angular.z);
   }
 }
 
