@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(wrp_ros2 VERSION 0.2.0)
+project(wrp_ros2 VERSION 1.0.0)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
