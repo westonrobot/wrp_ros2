@@ -37,7 +37,7 @@ find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 # wr packages
-find_package(wrp_sdk 1.0.0 REQUIRED)
+find_package(wrp_sdk 1.2 REQUIRED)
 
 # Attempt to find lelycan libraries for peripheral nodes
 find_package(PkgConfig REQUIRED)
@@ -128,8 +128,6 @@ ament_target_dependencies(mobile_base_node
   tf2_ros
   tf2_geometry_msgs)
 
-
-
 install(TARGETS
   mobile_base_node
   DESTINATION lib/${PROJECT_NAME}
@@ -151,10 +149,10 @@ if(BUILD_PERIPH_MODULE)
 
   add_executable(imu_sensor_node src/peripheral/imu_sensor_node.cpp)
   if ($ENV{ROS_DISTRO} STREQUAL "humble")
-    target_link_libraries(imu_sensor_node westonrobot::wrp_sdk_peripheral "${cpp_typesupport_target}")
+    target_link_libraries(imu_sensor_node westonrobot::wrp_sdk_peripheral westonrobot::wrp_sdk_canopen "${cpp_typesupport_target}")
   else()
     rosidl_target_interfaces(imu_sensor_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(imu_sensor_node westonrobot::wrp_sdk_peripheral)
+    target_link_libraries(imu_sensor_node westonrobot::wrp_sdk_peripheral westonrobot::wrp_sdk_canopen)
   endif()
   ament_target_dependencies(imu_sensor_node
     rclcpp
@@ -177,10 +175,10 @@ if(BUILD_PERIPH_MODULE)
 
   add_executable(power_regulator_node src/peripheral/power_regulator_node.cpp)
   if ($ENV{ROS_DISTRO} STREQUAL "humble")
-  target_link_libraries(power_regulator_node westonrobot::wrp_sdk_peripheral "${cpp_typesupport_target}")
+  target_link_libraries(power_regulator_node westonrobot::wrp_sdk_peripheral westonrobot::wrp_sdk_canopen "${cpp_typesupport_target}")
   else()
     rosidl_target_interfaces(power_regulator_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(power_regulator_node westonrobot::wrp_sdk_peripheral)
+    target_link_libraries(power_regulator_node westonrobot::wrp_sdk_peripheral westonrobot::wrp_sdk_canopen)
   endif()
   ament_target_dependencies(power_regulator_node
     rclcpp
