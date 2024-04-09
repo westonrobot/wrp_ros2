@@ -13,15 +13,16 @@ jobs:
   build:
     strategy:
       matrix:
-        container: ["westonrobot/ros:foxy-ci", "westonrobot/ros:humble-ci"]
-        runner: [[self-hosted, Linux, X64], [self-hosted, Linux, ARM64]]
-    runs-on: ${{ matrix.runner}}
+        container: ["westonrobot/ros:foxy-ci", "westonrobot/ros:humble-ci-latest"]
+        runner: ["ubuntu-latest"]
+    runs-on: ubuntu-latest
     container:
       image: ${{ matrix.container }}
     defaults:
       run:
         shell: bash
     steps:
+      - uses:  westonrobot-dev/action-cleanup@master
       - name: Upgrade git if on Ubuntu 18.04
         if: |
           contains(matrix.container, 'bionic') || contains(matrix.container, 'zephyr') || contains(matrix.container, 'melodic')
@@ -41,9 +42,8 @@ jobs:
       - name: Install latest wrp_sdk
         run: |
           echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/weston-robot.list
-          echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release $(lsb_release -cs) next" >> /etc/apt/sources.list.d/weston-robot.list
           curl -sSL 'https://westonrobot.jfrog.io/artifactory/api/security/keypair/wr-deb/public' | apt-key add -
-          apt-get update && apt-get -y install wrp_sdk
+          apt-get update && apt-get -y install wrp-sdk
       - name: Install latest lely-can
         run: |
           add-apt-repository ppa:lely/ppa
@@ -51,14 +51,14 @@ jobs:
       - name: Install ROS dependencies
         run: |
           apt-get install -y python3-rosdep
-          rosdep init
+          if [ ! -e /etc/ros/rosdep/sources.list.d/20-default.list ]; then rosdep init; fi
           cd ${GITHUB_WORKSPACE}/colcon_ws
           source /opt/ros/${ROS_DISTRO}/setup.bash
           rosdep update
-          rosdep install -y --ignore-src --from-paths src --rosdistro ${ROS_DISTRO} --skip-keys wrp_sdk --skip-keys wrp_zbus
+          rosdep install -y -r --ignore-src --from-paths src --rosdistro ${ROS_DISTRO}
       - name: Colcon build
         run: |
           cd ${GITHUB_WORKSPACE}/colcon_ws
           source /opt/ros/${ROS_DISTRO}/setup.bash
-          colcon build
+          colcon build --symlink-install --cmake-args " -DCMAKE_BUILD_TYPE=Release"
           
