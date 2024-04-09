@@ -42,9 +42,8 @@ jobs:
       - name: Install latest wrp_sdk
         run: |
           echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/weston-robot.list
-          echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release $(lsb_release -cs) next" >> /etc/apt/sources.list.d/weston-robot.list
           curl -sSL 'https://westonrobot.jfrog.io/artifactory/api/security/keypair/wr-deb/public' | apt-key add -
-          apt-get update && apt-get -y install wrp_sdk
+          apt-get update && apt-get -y install wrp-sdk
       - name: Install latest lely-can
         run: |
           add-apt-repository ppa:lely/ppa
