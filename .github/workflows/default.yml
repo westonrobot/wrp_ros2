@@ -13,9 +13,9 @@ jobs:
   build:
     strategy:
       matrix:
-        container: ["westonrobot/ros:foxy-ci", "westonrobot/ros:humble-ci"]
-        runner: [[self-hosted, Linux, X64], [self-hosted, Linux, ARM64]]
-    runs-on: ${{ matrix.runner}}
+        container: ["westonrobot/ros:foxy-ci", "westonrobot/ros:humble-ci-latest"]
+        runner: ["ubuntu-latest"]
+    runs-on: ubuntu-latest
     container:
       image: ${{ matrix.container }}
     defaults:
