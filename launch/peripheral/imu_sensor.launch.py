@@ -9,6 +9,11 @@ def generate_launch_description():
     sim_time_launch_arg = DeclareLaunchArgument(
         "use_sim_time", default_value="false",
         description='Use simulation clock if true')
+    
+    sensor_model_launch_arg = DeclareLaunchArgument(
+        "sensor_model", default_value="hipnuc",
+        description="Sensor model: hipnuc/wit"
+    )
 
     device_path_launch_arg = DeclareLaunchArgument(
         "device_path", default_value="/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
@@ -31,6 +36,7 @@ def generate_launch_description():
         executable="imu_sensor_node",
         output="screen",
         parameters=[{
+            "sensor_model": LaunchConfiguration("sensor_model"),
             "device_path": LaunchConfiguration("device_path"),
             "baud_rate": LaunchConfiguration("baud_rate"),
             "frame_id": LaunchConfiguration("frame_id"),
@@ -40,6 +46,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         sim_time_launch_arg,
+        sensor_model_launch_arg,
         device_path_launch_arg,
         baud_rate_launch_arg,
         frame_id_launch_arg,
