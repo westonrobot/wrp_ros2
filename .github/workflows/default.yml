@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        container: ["westonrobot/ros:foxy-ci", "westonrobot/ros:humble-ci-latest"]
+        container: ["westonrobot/ros:humble-ci-latest"]
         runner: ["ubuntu-latest"]
     runs-on: ubuntu-latest
     container:
