@@ -119,6 +119,34 @@ class DualAckermannModel {
   ControlType u_;
 };
 
+class ParallelModel {
+ public:
+  using StateType = std::vector<double>;
+
+  struct ControlType {
+    double v;
+    double phi;
+  };
+
+  struct ParamType {
+    ParamType() = default;
+  };
+
+ public:
+  ParallelModel(ParamType param, ControlType u) : param_(param), u_(u){};
+
+  // x1 = x, x2 = y, x3 = theta
+  void operator()(const StateType& x, StateType& xd, double) {
+    xd[0] = u_.v * std::cos(x[2] + u_.phi);
+    xd[1] = u_.v * std::sin(x[2] + u_.phi);
+    xd[2] = 0;
+  }
+
+ private:
+  ParamType param_;
+  ControlType u_;
+};
+
 }  // namespace westonrobot
 
 #endif /* WRP_SDK_ROBOT_KINEMATIC_MODELS_HPP */

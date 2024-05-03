@@ -6,6 +6,7 @@
  * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
 #include "wrp_sdk_robot/mobile_base_node.hpp"
+#include "wrp_sdk_robot/kinematic_models.hpp"
 
 #include "wrp_sdk/mobile_base/westonrobot/mobile_base.hpp"
 #include "wrp_sdk/mobile_base/agilex/agilex_base_v2_adapter.hpp"
@@ -44,7 +45,7 @@ bool MobileBaseNode::ReadParameters() {
   this->declare_parameter<std::string>("base_frame", "base_link");
   this->declare_parameter<std::string>("odom_frame", "odom");
   this->declare_parameter<bool>("auto_reconnect", true);
-  this->declare_parameter<bool>("publish_odom", true);
+  this->declare_parameter<bool>("publish_odom_tf", true);
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
@@ -71,8 +72,9 @@ bool MobileBaseNode::ReadParameters() {
   RCLCPP_INFO_STREAM(this->get_logger(),
                      "auto_reconnect: " << auto_request_control_);
 
-  this->get_parameter("publish_odom", publish_odom_tf_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "publish_odom: " << publish_odom_tf_);
+  this->get_parameter("publish_odom_tf", publish_odom_tf_);
+  RCLCPP_INFO_STREAM(this->get_logger(),
+                     "publish_odom_tf: " << publish_odom_tf_);
 
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
@@ -121,7 +123,6 @@ bool MobileBaseNode::SetupHardware() {
     return false;
   }
 
-  last_time_ = this->now();
   return true;
 }
 
@@ -145,13 +146,12 @@ bool MobileBaseNode::SetupInterfaces() {
                                                              10);
   rc_state_publisher_ =
       this->create_publisher<wrp_sdk_msgs::msg::RcState>("~/rc_state", 10);
+  odom_publisher_ =
+      this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
 
   if (publish_odom_tf_) {
     // setup tf broadcaster
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
-
-    odom_publisher_ =
-        this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
   }
   ultrasonic_data_publisher_ =
       this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>(
@@ -179,6 +179,7 @@ bool MobileBaseNode::SetupInterfaces() {
       std::bind(&MobileBaseNode::MotionResetCallback, this, _1, _2));
 
   // setup timers
+  last_odom_time_ = this->now();
   publish_timer_ = this->create_wall_timer(  // 50hz loop rate
       std::chrono::milliseconds(20),
       std::bind(&MobileBaseNode::PublishLoopCallback, this));
@@ -390,10 +391,8 @@ void MobileBaseNode::PublishRcState() {
 }
 
 void MobileBaseNode::PublishOdometry() {
-  // TODO calculate odometry according to robot type
   auto robot_odom = robot_->GetOdometry();
 
-  // ATTN: odometry directly from wrp_sdk still in progress
   geometry_msgs::msg::Twist robot_twist;
   robot_twist.linear.x = robot_odom.linear.x;
   robot_twist.linear.y = robot_odom.linear.y;
@@ -402,65 +401,113 @@ void MobileBaseNode::PublishOdometry() {
   robot_twist.angular.y = robot_odom.angular.y;
   robot_twist.angular.z = robot_odom.angular.z;
 
-  nav_msgs::msg::Odometry odom_msg =
-      MobileBaseNode::CalculateOdometry(robot_twist);
+  MobileBaseNode::UpdateOdometry(robot_twist);
 
-  // publish tf transformation
-  geometry_msgs::msg::TransformStamped tf_msg;
-  tf_msg.header.stamp = odom_msg.header.stamp;
-  tf_msg.header.frame_id = odom_msg.header.frame_id;
-  tf_msg.child_frame_id = odom_msg.child_frame_id;
+  std::lock_guard<std::mutex> lock(odom_mutex_);
 
-  tf_msg.transform.translation.x = odom_msg.pose.pose.position.x;
-  tf_msg.transform.translation.y = odom_msg.pose.pose.position.y;
-  tf_msg.transform.translation.z = 0.0;
-  tf_msg.transform.rotation = odom_msg.pose.pose.orientation;
+  if (publish_odom_tf_) {
+    geometry_msgs::msg::TransformStamped odom_tf;
+    odom_tf.header.stamp = this->now();
+    odom_tf.header.frame_id = odom_frame_;
+    odom_tf.child_frame_id = base_frame_;
 
-  tf_broadcaster_->sendTransform(tf_msg);
-  odom_publisher_->publish(odom_msg);
+    odom_tf.transform.translation.x = odom_msg_.pose.pose.position.x;
+    odom_tf.transform.translation.y = odom_msg_.pose.pose.position.y;
+    odom_tf.transform.translation.z = 0.0;
+    odom_tf.transform.rotation = odom_msg_.pose.pose.orientation;
+
+    tf_broadcaster_->sendTransform(odom_tf);
+  }
+
+  nav_msgs::msg::Odometry::UniquePtr odom_msg =
+      std::make_unique<nav_msgs::msg::Odometry>(odom_msg_);
+
+  odom_publisher_->publish(std::move(odom_msg));
 }
 
-nav_msgs::msg::Odometry MobileBaseNode::CalculateOdometry(
-    geometry_msgs::msg::Twist robot_twist) {
-  auto current_time = this->now();
-  double dt = (current_time - last_time_).seconds();
-  last_time_ = current_time;
-
-  // TODO: perform calculation based on robot type & wheel base other than scout
-  // & scout mini
-  double linear_speed = robot_twist.linear.x;
-  double angular_speed = robot_twist.angular.z;
-  double lateral_speed = robot_twist.linear.y;
-
-  double d_x =
-      (linear_speed * std::cos(theta_) - lateral_speed * std::sin(theta_)) * dt;
-  double d_y =
-      (linear_speed * std::sin(theta_) + lateral_speed * std::cos(theta_)) * dt;
-  double d_theta = angular_speed * dt;
-
-  position_x_ += d_x;
-  position_y_ += d_y;
-  theta_ += d_theta;
-
-  geometry_msgs::msg::Quaternion odom_quat =
-      MobileBaseNode::CreateQuaternionMsgFromYaw(theta_);
-
-  // publish odometry and tf messages
+void MobileBaseNode::UpdateOdometry(geometry_msgs::msg::Twist twist) {
   nav_msgs::msg::Odometry odom_msg;
-  odom_msg.header.stamp = current_time;
+  {
+    std::lock_guard<std::mutex> lock(odom_mutex_);
+    odom_msg = odom_msg_;
+  }
+
+  // Set twist
+  odom_msg.twist.twist = twist;
+
+  // Get dt
+  rclcpp::Time current_time = this->now();
+  double dt = (current_time - last_odom_time_).seconds();
+  last_odom_time_ = current_time;
+
+  // Get current pose as RPY
+  tf2::Quaternion current_quat;
+  tf2::fromMsg(odom_msg.pose.pose.orientation, current_quat);
+  tf2::Matrix3x3 m(current_quat);
+  double roll, pitch, yaw;
+  m.getRPY(roll, pitch, yaw);
+
+  // Update pose
+  switch (robot_variant_) {
+    case RobotVariant::kAgilexScoutV2:
+    case RobotVariant::kAgilexScoutMini:
+    case RobotVariant::kAgilexTracer:
+    case RobotVariant::kAgilexTracerMini:
+    case RobotVariant::kAgilexBunker:
+    case RobotVariant::kWRScout:
+    case RobotVariant::kWRVBot:
+    case RobotVariant::kBangBangRobooterX: {  // Differential drive platforms
+      MotionModel<DifferentialModel> model;
+      DifferentialModel::StateType current_state = {
+          odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y, yaw};
+      DifferentialModel::ControlType control = {twist.linear.x,
+                                                twist.angular.z};
+      DifferentialModel::ParamType param = {};
+      auto new_state = model.StepForward(current_state, control, param, dt);
+      odom_msg.pose.pose.position.x = new_state[0];
+      odom_msg.pose.pose.position.y = new_state[1];
+      current_quat.setRPY(0.0, 0.0, new_state[2]);
+      odom_msg.pose.pose.orientation = tf2::toMsg(current_quat);
+      break;
+    }
+    case RobotVariant::kAgilexScoutMiniOmni: {  // Omni drive platforms
+      MotionModel<OmniModel> model;
+      OmniModel::StateType current_state = {odom_msg.pose.pose.position.x,
+                                            odom_msg.pose.pose.position.y, yaw};
+      OmniModel::ControlType control = {twist.linear.x, twist.linear.y,
+                                        twist.angular.z};
+      OmniModel::ParamType param = {};
+      auto new_state = model.StepForward(current_state, control, param, dt);
+      odom_msg.pose.pose.position.x = new_state[0];
+      odom_msg.pose.pose.position.y = new_state[1];
+      current_quat.setRPY(0.0, 0.0, new_state[2]);
+      odom_msg.pose.pose.orientation = tf2::toMsg(current_quat);
+      break;
+    }
+    case RobotVariant::kAgilexHunter:
+    case RobotVariant::kAgilexHunterSE: {  // Ackermann drive platforms
+      // TODO: Implement Ackermann drive model
+      break;
+    }
+    case RobotVariant::kAgilexRanger:
+    case RobotVariant::kAgilexRangerMiniV1:
+    case RobotVariant::kAgilexRangerMiniV2: {  // Multi-modal drive platforms
+      // TODO: Implement Multi-modal drive model
+      break;
+    }
+    default: {
+      RCLCPP_ERROR_STREAM(this->get_logger(),
+                          "Unknown robot type: " << robot_type_);
+      return;
+    }
+  }
+  odom_msg.header.stamp = this->now();
   odom_msg.header.frame_id = odom_frame_;
   odom_msg.child_frame_id = base_frame_;
-
-  odom_msg.pose.pose.position.x = position_x_;
-  odom_msg.pose.pose.position.y = position_y_;
-  odom_msg.pose.pose.position.z = 0.0;
-  odom_msg.pose.pose.orientation = odom_quat;
-
-  odom_msg.twist.twist.linear.x = linear_speed;
-  odom_msg.twist.twist.linear.y = 0.0;
-  odom_msg.twist.twist.angular.z = angular_speed;
-
-  return odom_msg;
+  {
+    std::lock_guard<std::mutex> lock(odom_mutex_);
+    odom_msg_ = odom_msg;
+  }
 }
 
 geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(

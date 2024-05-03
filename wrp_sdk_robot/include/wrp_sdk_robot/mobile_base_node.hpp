@@ -10,6 +10,7 @@
 
 #include <string>
 #include <memory>
+#include <mutex>
 
 #include "rclcpp/rclcpp.hpp"
 #include <tf2_ros/transform_broadcaster.h>
@@ -46,6 +47,7 @@ class MobileBaseNode : public rclcpp::Node {
     kAgilexScoutV2 = 0,
     kAgilexScoutMini,
     kAgilexScoutMiniOmni,
+    kAgilexRanger,
     kAgilexRangerMiniV1,
     kAgilexRangerMiniV2,
     kAgilexTracer,
@@ -76,12 +78,10 @@ class MobileBaseNode : public rclcpp::Node {
   std::shared_ptr<MobileRobotInterface> robot_ = nullptr;
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
-  rclcpp::Time last_time_;
-  float position_x_ = 0.0;
-  float position_y_ = 0.0;
-  float theta_ = 0.0;
-  float loop_period_ = 0.02;  // in secs
   // ----- Published Messages-----
+  nav_msgs::msg::Odometry odom_msg_;
+  std::mutex odom_mutex_;
+  rclcpp::Time last_odom_time_;
   // ----- Subscribers & Publishers & Services -----
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr
       motion_cmd_subscriber_;
@@ -137,8 +137,7 @@ class MobileBaseNode : public rclcpp::Node {
   void PublishActuatorState();
   void PublishRcState();
   void PublishOdometry();
-  nav_msgs::msg::Odometry CalculateOdometry(
-      geometry_msgs::msg::Twist robot_twist);
+  void UpdateOdometry(geometry_msgs::msg::Twist twist);
 
   void PublishSensorData();
 
