@@ -88,5 +88,9 @@ void GpsReceiverNode::PublishCallback(const NavSatFixMsg& gps_fix) {
 
 }  // namespace westonrobot
 
-#include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::GpsReceiverNode)
+int main(int argc, char const* argv[]) {
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<westonrobot::GpsReceiverNode>());
+  rclcpp::shutdown();
+  return 0;
+}

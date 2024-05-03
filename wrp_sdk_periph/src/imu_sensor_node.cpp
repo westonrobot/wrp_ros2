@@ -109,5 +109,9 @@ void ImuSensorNode::PublishCallback(const ImuMsg& imu_msg) {
 }
 }  // namespace westonrobot
 
-#include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::ImuSensorNode)
+int main(int argc, char const* argv[]) {
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<westonrobot::ImuSensorNode>());
+  rclcpp::shutdown();
+  return 0;
+}

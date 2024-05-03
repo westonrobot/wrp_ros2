@@ -1,11 +1,9 @@
 /**
- * imu_sensor_node.hpp
- *
- * Created on Tue Nov 23 2021 16:19:12
- *
- * Description:
- *
- * Copyright (c) 2021 Weston Robot Pte. Ltd.
+ * @file imu_sensor_node.hpp
+ * @brief 
+ * @date 03-05-2024
+ * 
+ * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
 #ifndef IMU_SENSOR_NODE_HPP
 #define IMU_SENSOR_NODE_HPP

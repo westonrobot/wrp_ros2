@@ -1,11 +1,9 @@
 /**
- * power_regulator_node.hpp
- *
- * Created on Wed Apr 13 2022 14:24:40
- *
- * Description:
- *
- * Copyright (c) 2022 Weston Robot Pte. Ltd.
+ * @file power_regulator_node.hpp
+ * @brief 
+ * @date 03-05-2024
+ * 
+ * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
 
 #ifndef POWER_REGULATOR_NODE_HPP

@@ -2,13 +2,14 @@ cmake_minimum_required(VERSION 3.8)
 project(wrp_sdk_periph)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic -fno-gnu-unique)
 endif()
+
+list(APPEND CMAKE_PREFIX_PATH "/opt/weston_robot/lib/cmake")
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -35,64 +36,85 @@ else()
     $ sudo apt-get install -y pkg-config liblely-coapp-dev liblely-co-tools")
 endif()
 
-add_library(wrp_sdk_periph_base SHARED
-  "src/gps_receiver_node.cpp"
-  "src/ultrasonic_sensor_node.cpp"
+include_directories(
+  include
 )
-target_link_libraries(wrp_sdk_periph_base
+
+add_executable(gps_receiver_node
+  "src/gps_receiver_node.cpp"
+)
+target_link_libraries(gps_receiver_node
   westonrobot::wrp_sdk_peripheral
 )
-target_include_directories(wrp_sdk_periph_base PUBLIC
+target_include_directories(gps_receiver_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-ament_target_dependencies(wrp_sdk_periph_base
+ament_target_dependencies(gps_receiver_node
   rclcpp
-  rclcpp_components
   sensor_msgs
 )
-rclcpp_components_register_node(wrp_sdk_periph_base
-  PLUGIN "westonrobot::GpsReceiverNode"
-  EXECUTABLE gps_receiver_node)
-rclcpp_components_register_node(wrp_sdk_periph_base
-  PLUGIN "westonrobot::UltrasonicSensorNode"
-  EXECUTABLE ultrasonic_sensor_node)
 
+add_executable(ultrasonic_sensor_node
+  "src/ultrasonic_sensor_node.cpp"
+)
+target_link_libraries(ultrasonic_sensor_node
+  westonrobot::wrp_sdk_peripheral
+)
+target_include_directories(ultrasonic_sensor_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(ultrasonic_sensor_node
+  rclcpp
+  sensor_msgs
+)
 install(TARGETS
-  wrp_sdk_periph_base
+  gps_receiver_node
+  ultrasonic_sensor_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 if(BUILD_CANOPEN_MODULE)
-  add_library(wrp_sdk_periph_canopen SHARED
-    src/power_regulator_node.cpp
-    src/imu_sensor_node.cpp
+  add_executable(power_regulator_node
+    "src/power_regulator_node.cpp"
   )
-  target_link_libraries(wrp_sdk_periph_canopen
-    # westonrobot::wrp_sdk_canopen
-    westonrobot::wrp_sdk_peripheral
+  target_link_libraries(power_regulator_node
+  westonrobot::wrp_sdk_peripheral
+    westonrobot::wrp_sdk_canopen
   )
-  target_include_directories(wrp_sdk_periph_canopen PUBLIC
+  target_include_directories(power_regulator_node PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
-  ament_target_dependencies(wrp_sdk_periph_canopen
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(power_regulator_node
     rclcpp
-    rclcpp_components
     std_msgs
     sensor_msgs
     wrp_sdk_msgs
   )
-  rclcpp_components_register_node(wrp_sdk_periph_canopen
-    PLUGIN "westonrobot::PowerRegulatorNode"
-    EXECUTABLE power_regulator_node)
-  rclcpp_components_register_node(wrp_sdk_periph_canopen
-    PLUGIN "westonrobot::ImuSensorNode"
-    EXECUTABLE imu_sensor_node)
+
+  add_executable(imu_sensor_node
+    "src/imu_sensor_node.cpp"
+  )
+  target_link_libraries(imu_sensor_node
+    westonrobot::wrp_sdk_peripheral
+    westonrobot::wrp_sdk_canopen
+  )
+  target_include_directories(imu_sensor_node PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
+  ament_target_dependencies(imu_sensor_node
+    rclcpp
+    sensor_msgs
+  )
 
   install(TARGETS
-    wrp_sdk_periph_canopen
+    power_regulator_node
+    imu_sensor_node
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib/${PROJECT_NAME}

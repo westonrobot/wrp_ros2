@@ -1,13 +1,10 @@
 /**
- * ultrasonic_sensor_node.hpp
- *
- * Created on Tue Apr 12 2022 16:26:07
- *
- * Description:
- *
- * Copyright (c) 2022 Weston Robot Pte. Ltd.
+ * @file ultrasonic_sensor_node.hpp
+ * @brief 
+ * @date 03-05-2024
+ * 
+ * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
-
 #ifndef ULTRASONIC_SENSOR_NODE_HPP
 #define ULTRASONIC_SENSOR_NODE_HPP
 

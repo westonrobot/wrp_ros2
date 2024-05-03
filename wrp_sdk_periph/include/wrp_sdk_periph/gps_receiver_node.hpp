@@ -1,11 +1,9 @@
 /**
- * gps_receiver_node.hpp
- *
- * Created on Tue Nov 23 2021 13:43:06
- *
- * Description:
- *
- * Copyright (c) 2021 Weston Robot Pte. Ltd.
+ * @file gps_receiver_node.hpp
+ * @brief 
+ * @date 03-05-2024
+ * 
+ * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
 #ifndef GPS_RECEIVER_NODE_HPP
 #define GPS_RECEIVER_NODE_HPP

@@ -113,5 +113,9 @@ void UltrasonicSensorNode::PublishCallback(const UltrasonicMsg& imu_msg) {
 
 }  // namespace westonrobot
 
-#include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(westonrobot::UltrasonicSensorNode)
+int main(int argc, char const* argv[]) {
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<westonrobot::UltrasonicSensorNode>());
+  rclcpp::shutdown();
+  return 0;
+}
