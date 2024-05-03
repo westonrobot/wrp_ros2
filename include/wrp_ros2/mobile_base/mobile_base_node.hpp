@@ -42,15 +42,38 @@ class MobileBaseNode : public rclcpp::Node {
   ~MobileBaseNode(){};
 
  private:
+  enum class RobotVariant {
+    // AglieX
+    kAgilexScoutV2 = 0,
+    kAgilexScoutMini,
+    kAgilexScoutMiniOmni,
+    kAgilexRangerMiniV1,
+    kAgilexRangerMiniV2,
+    kAgilexTracer,
+    kAgilexTracerMini,
+    kAgilexHunter,
+    kAgilexHunterSE,
+    kAgilexBunker,
+
+    // WestonRobot
+    kWRScout,
+    kWRVBot,
+
+    // BangBang
+    kBangBangRobooterX,
+
+    kNumOfVariants
+  };
+
   // ----- ROS Node Parameters -----
-  std::string robot_type_;
-  std::string can_device_;
-  std::string base_frame_;
-  std::string odom_frame_;
-  bool auto_reconnect_;
-  bool publish_odom_;
-  std::string motion_type_;
+  int robot_type_;    /**< Robot Type/Variant*/
+  std::string can_device_;    /**< CAN device to use*/
+  std::string base_frame_;    /**< Robot base frame name*/
+  std::string odom_frame_;    /**< Odometry frame name*/
+  bool publish_odom_tf_;      /**< If publish odom_frame->base_frame tf*/
+  bool auto_request_control_; /**< If auto request for control*/
   // ----- Internal Variables -----
+  RobotVariant robot_variant_;
   std::shared_ptr<MobileRobotInterface> robot_ = nullptr;
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
@@ -74,7 +97,8 @@ class MobileBaseNode : public rclcpp::Node {
       battery_state_publisher_;
 
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
-  rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr tof_data_publisher_;
+  rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr
+      tof_data_publisher_;
   rclcpp::Publisher<wrp_ros2::msg::RangeDataArray>::SharedPtr
       ultrasonic_data_publisher_;
 
@@ -104,7 +128,7 @@ class MobileBaseNode : public rclcpp::Node {
   void PublishLoopCallback();
 
   bool ReadParameters();
-  bool SetupRobot();
+  bool SetupHardware();
   bool SetupInterfaces();
   void PublishRobotState();
   void PublishSensorData();

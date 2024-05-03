@@ -11,6 +11,7 @@
 
 #include "wrp_sdk/mobile_base/westonrobot/mobile_base.hpp"
 #include "wrp_sdk/mobile_base/agilex/agilex_base_v2_adapter.hpp"
+#include "wrp_sdk/mobile_base/bangbang/robooterx_base_adapter.hpp"
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2/LinearMath/Quaternion.h"
@@ -31,7 +32,7 @@ MobileBaseNode::MobileBaseNode(const rclcpp::NodeOptions& options)
     rclcpp::shutdown();
   }
 
-  if (!MobileBaseNode::SetupRobot()) {
+  if (!MobileBaseNode::SetupHardware()) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Failed to setup robot");
     rclcpp::shutdown();
   }
@@ -44,18 +45,23 @@ MobileBaseNode::MobileBaseNode(const rclcpp::NodeOptions& options)
 
 bool MobileBaseNode::ReadParameters() {
   // Declare default parameters
+  this->declare_parameter<int>("robot_type", 0);
   this->declare_parameter<std::string>("can_device", "can0");
-  this->declare_parameter<std::string>("robot_type", "weston");
   this->declare_parameter<std::string>("base_frame", "base_link");
   this->declare_parameter<std::string>("odom_frame", "odom");
   this->declare_parameter<bool>("auto_reconnect", true);
   this->declare_parameter<bool>("publish_odom", true);
-  this->declare_parameter<std::string>("motion_type", "skid_steer");
 
   // Get parameters
   RCLCPP_INFO_STREAM(this->get_logger(), "--- Parameters loaded are ---");
 
   this->get_parameter("robot_type", robot_type_);
+  if (robot_type_ < 0 ||
+      robot_type_ >= static_cast<int>(RobotVariant::kNumOfVariants)) {
+    RCLCPP_ERROR_STREAM(this->get_logger(), "Invalid robot type");
+    return false;
+  }
+  robot_variant_ = static_cast<RobotVariant>(robot_type_);
   RCLCPP_INFO_STREAM(this->get_logger(), "robot_type: " << robot_type_);
 
   this->get_parameter("can_device", can_device_);
@@ -67,33 +73,50 @@ bool MobileBaseNode::ReadParameters() {
   this->get_parameter("odom_frame", odom_frame_);
   RCLCPP_INFO_STREAM(this->get_logger(), "odom_frame: " << odom_frame_);
 
-  this->get_parameter("auto_reconnect", auto_reconnect_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "auto_reconnect: " << auto_reconnect_);
+  this->get_parameter("auto_reconnect", auto_request_control_);
+  RCLCPP_INFO_STREAM(this->get_logger(),
+                     "auto_reconnect: " << auto_request_control_);
 
-  this->get_parameter("publish_odom", publish_odom_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "publish_odom: " << publish_odom_);
-
-  this->get_parameter("motion_type", motion_type_);
-  RCLCPP_INFO_STREAM(this->get_logger(), "motion_type: " << motion_type_);
+  this->get_parameter("publish_odom", publish_odom_tf_);
+  RCLCPP_INFO_STREAM(this->get_logger(), "publish_odom: " << publish_odom_tf_);
 
   RCLCPP_INFO_STREAM(this->get_logger(), "-----------------------------");
 
   return true;
 }
 
-bool MobileBaseNode::SetupRobot() {
+bool MobileBaseNode::SetupHardware() {
   // Create appropriate adaptor
-  if (robot_type_ == "weston") {
-    robot_ = std::make_shared<MobileBase>();
-  } else if (robot_type_ == "agilex") {
-    robot_ = std::make_shared<AgilexBaseV2Adapter>();
-  } else if (robot_type_ == "vbot") {
-    robot_ = std::make_shared<MobileBase>(true);
-  } else {
-    RCLCPP_ERROR_STREAM(this->get_logger(),
-                        "Unknown robot base type\n Supported are \"weston\", "
-                        "\"agilex\" & \"vbot\"");
-    return false;
+  switch (robot_variant_) {
+    case RobotVariant::kWRScout: {
+      robot_ = std::make_shared<MobileBase>();
+      break;
+    }
+    case RobotVariant::kWRVBot: {
+      robot_ = std::make_shared<MobileBase>(true);
+      break;
+    }
+    case RobotVariant::kAgilexScoutV2:
+    case RobotVariant::kAgilexScoutMini:
+    case RobotVariant::kAgilexScoutMiniOmni:
+    case RobotVariant::kAgilexRangerMiniV1:
+    case RobotVariant::kAgilexRangerMiniV2:
+    case RobotVariant::kAgilexTracer:
+    case RobotVariant::kAgilexTracerMini:
+    case RobotVariant::kAgilexHunter:
+    case RobotVariant::kAgilexHunterSE:
+    case RobotVariant::kAgilexBunker: {
+      robot_ = std::make_shared<AgilexBaseV2Adapter>();
+      break;
+    }
+    case RobotVariant::kBangBangRobooterX: {
+      robot_ = std::make_shared<RobooterXBaseAdapter>();
+      break;
+    }
+    default: {
+      RCLCPP_ERROR_STREAM(this->get_logger(), "Unknown robot base type");
+      return false;
+    }
   }
 
   // Connect to robot through can device
@@ -125,7 +148,7 @@ bool MobileBaseNode::SetupInterfaces() {
       this->create_publisher<sensor_msgs::msg::BatteryState>("~/battery_state",
                                                              10);
 
-  if (publish_odom_) {
+  if (publish_odom_tf_) {
     // setup tf broadcaster
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
@@ -254,7 +277,7 @@ void MobileBaseNode::MotionResetCallback(
 }
 
 void MobileBaseNode::PublishLoopCallback() {
-  if (auto_reconnect_ && !robot_->SdkHasControlToken()) {
+  if (auto_request_control_ && !robot_->SdkHasControlToken()) {
     auto return_code = robot_->RequestControl();
     if (return_code != HandshakeReturnCode::kControlAcquired) {
       RCLCPP_WARN_STREAM(this->get_logger(),
@@ -264,7 +287,7 @@ void MobileBaseNode::PublishLoopCallback() {
   }
   PublishRobotState();
   PublishSensorData();
-  if (publish_odom_) {
+  if (publish_odom_tf_) {
     PublishWheelOdometry();
   }
 }
