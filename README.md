@@ -12,7 +12,7 @@ This package contains a minimal wrapper around wrp_sdk and provides a ROS2 inter
   
 **Supported Robots**:
 
-* Refer to [mobile_base](./src/mobile_base/README.md) for more details.
+* Refer to [mobile_base](./wrp_sdk_robot/README.md) for more details.
 * 
 **Supported Peripherals**:
 
@@ -23,8 +23,8 @@ This package contains a minimal wrapper around wrp_sdk and provides a ROS2 inter
 
 More details can be found in the README inside individual src sub-folders
 
-  * [Mobile Base Node](./src/mobile_base)
-  * [Peripheral Nodes](./src/peripheral)
+  * [Mobile Base Node](./wrp_sdk_robot/README.md)
+  * [Peripheral Nodes](./wrp_sdk_periph/README.md)
 
 ## Getting the package
 
@@ -54,9 +54,9 @@ More details can be found in the README inside individual src sub-folders
     ```
 2. Bringup can device
 
-    **NOTE**: Adjust CAN bitrate accordingly. Refer to the tables in the [mobile_base README](./src/mobile_base/README.md) and [peripheral README](./src/peripheral/README.md) for the correct bitrate.
+    **NOTE**: Adjust CAN bitrate accordingly. Refer to the tables in the [mobile_base README](./wrp_sdk_robot/README.md) and [peripheral README](./wrp_sdk_periph/README.md) for the correct bitrate.
    ```
-   $ sudo ip link set can0 up type can bitrate 500000
+   $ sudo ip link set can0 up type can bitrate <bitrate>
    $ sudo ip link set can0 txqueuelen 1000
    ```
 3. If no error occured during the previous steps, you should be able to see the can device now by using command
@@ -83,32 +83,32 @@ You can find more information about robot base control from [this page](https://
 
 **_You may need to change run time parameters by editing the corresponding launch file_**
 
-1. Mobile Base Node (and [variants](./launch/mobile_base))
+1. Mobile Base Node (and [variants](./wrp_sdk_robot/launch/mobile_base))
 
     ```bash
-    ros2 launch wrp_ros2 mobile_base.launch.py
+    ros2 launch wrp_sdk_robot mobile_base.launch.py
     ```
 
 2. Power Regulator Node
 
     ```bash
-    ros2 wrp_ros2 power_regulator.launch.py
+    ros2 launch wrp_sdk_periph power_regulator.launch.py
     ```
 
 3. GPS Receiver Node
 
     ```bash
-    ros2 wrp_ros2 gps_receiver_launch.py 
+    ros2 launch wrp_sdk_periph gps_receiver_launch.py 
     ```
 
 4. IMU Sensor Node
 
     ```bash
-    ros2 wrp_ros2 imu_sensor_launch.py 
+    ros2 launch wrp_sdk_periph imu_sensor_launch.py 
     ```
 
 5. Ultrasonic Sensor Node
 
     ```bash
-    ros2 wrp_ros2 ultrasonic_sensor.launch.py
+    ros2 launch wrp_sdk_periph ultrasonic_sensor.launch.py
     ```

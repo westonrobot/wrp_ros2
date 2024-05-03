@@ -14,13 +14,12 @@ def generate_launch_description():
                                                     "mobile_base",
                                                     "mobile_base.launch.py")]),
         launch_arguments={
-            "robot_type": "agilex",
+            "robot_type": "6",
             "can_device": "can0",
             "base_frame": "base_link",
             "odom_frame": "odom",
-            "odom_topic_remap": "~/odom",
             "auto_reconnect": "true",
-            "motion_type": "differential",
+            "publish_odom_tf": "true",
         }.items(),
     )
 

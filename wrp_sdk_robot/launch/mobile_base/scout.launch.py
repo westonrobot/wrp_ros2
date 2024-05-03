@@ -8,21 +8,20 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     ld = LaunchDescription()
 
-    mobile_base_scout_mini_node = IncludeLaunchDescription(
+    mobile_base_scout_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(get_package_share_directory("wrp_sdk_robot"),
                                                     "launch",
                                                     "mobile_base",
                                                     "mobile_base.launch.py")]),
         launch_arguments={
-            "robot_type": "agilex",
+            "robot_type": "0",
             "can_device": "can0",
             "base_frame": "base_link",
             "odom_frame": "odom",
-            "odom_topic_remap": "~/odom",
             "auto_reconnect": "true",
-            "motion_type": "omni",
+            "publish_odom_tf": "true",
         }.items(),
     )
 
-    ld.add_action(mobile_base_scout_mini_node)
+    ld.add_action(mobile_base_scout_node)
     return ld
