@@ -1,8 +1,8 @@
 /**
  * @file mobile_base_node.hpp
- * @brief 
+ * @brief
  * @date 03-05-2024
- * 
+ *
  * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
 #ifndef MOBILE_BASE_NODE_HPP
@@ -27,6 +27,7 @@
 #include "wrp_sdk_msgs/msg/range_data.hpp"
 #include "wrp_sdk_msgs/msg/range_data_array.hpp"
 #include "wrp_sdk_msgs/msg/motion_command.hpp"
+#include "wrp_sdk_msgs/msg/rc_state.hpp"
 
 #include "wrp_sdk_msgs/srv/access_control.hpp"
 #include "wrp_sdk_msgs/srv/assisted_mode_control.hpp"
@@ -93,6 +94,7 @@ class MobileBaseNode : public rclcpp::Node {
       actuator_state_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr
       battery_state_publisher_;
+  rclcpp::Publisher<wrp_sdk_msgs::msg::RcState>::SharedPtr rc_state_publisher_;
 
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
   rclcpp::Publisher<wrp_sdk_msgs::msg::RangeDataArray>::SharedPtr
@@ -106,7 +108,8 @@ class MobileBaseNode : public rclcpp::Node {
       assisted_mode_control_service_;
   rclcpp::Service<wrp_sdk_msgs::srv::LightControl>::SharedPtr
       light_control_service_;
-  rclcpp::Service<wrp_sdk_msgs::srv::MotionReset>::SharedPtr motion_reset_service_;
+  rclcpp::Service<wrp_sdk_msgs::srv::MotionReset>::SharedPtr
+      motion_reset_service_;
   //  ----- Timers -----
   rclcpp::TimerBase::SharedPtr publish_timer_;
   //  ----- Callbacks -----
@@ -132,11 +135,10 @@ class MobileBaseNode : public rclcpp::Node {
   void PublishSystemState();
   void PublishBatteryState();
   void PublishActuatorState();
+  void PublishRcState();
   void PublishOdometry();
   nav_msgs::msg::Odometry CalculateOdometry(
       geometry_msgs::msg::Twist robot_twist);
-  void PublishRcState() {};
-  void PublishLightState() {};
 
   void PublishSensorData();
 

@@ -1,51 +1,77 @@
 # wrp_ros2 mobile base
 
-## About
+## Overview
+ROS2 wrapper around wrp_sdk robot interfaces.
 
-ROS2 wrappers around wrp_sdk peripheral drivers.
+wrp_sdk uses a abstract interface to communicate with different robot platforms. This package provides a ROS2 wrapper around this interface to allow for easy integration with ROS2 systems. Due to the abstract nature of the interface, some interfaces may not be available on all robot platforms. Please refer to the [support matrix](#interface-support-matrix) below for more information.
 
 ## Support
 
 ### Robot platforms
-| Robot Platform | Robot Base Type | CAN Bitrate | Support             |
-| -------------- | --------------- | ----------- | ------------------- |
-| Scout          | "weston"        | 1000000     | Supported           |
-| Scout Mini     | "agilex"        | 500000      | Supported           |
-| Hunter         | "agilex"        | 500000      | Not fully supported |
-| Tracer         | "agilex"        | 500000      | Supported           |
-| Bunker         | "agilex"        | 500000      | Not fully supported |
-| Ranger Mini    | "agilex"        | 500000      | Not fully supported |
+
+| Robot Platform  | Manufacturer      | CAN Bitrate | Robot Type |
+| --------------- | ----------------- | ----------- | ---------- |
+| Scout V2        | AgileX            | 500000      | 0          |
+| Scout Mini      | AgileX            | 500000      | 1          |
+| Scout Mini Omni | AgileX            | 500000      | 2          |
+| Ranger Mini V1  | AgileX            | 500000      | 3          |
+| Ranger Mini V2  | AgileX            | 500000      | 4          |
+| Tracer          | AgileX            | 500000      | 5          |
+| Tracer Mini     | AgileX            | 500000      | 6          |
+| Hunter          | AgileX            | 500000      | 7          |
+| Hunter SE       | AgileX            | 500000      | 8          |
+| Bunker          | AgileX            | 500000      | 9          |
+| WR Scout V2     | Weston Robot      | 1000000     | 10         |
+| WR Vbot         | Weston Robot      | 1000000     | 11         |
+| RobooterX       | BangBang Robotics | 500000      | 12         |
+
+### Interface Support Matrix
+Legend: Y - Supported, N - Not Supported, P - Partially Supported
+
+| Robot Platform  | System State | Motion State | Actuator State | Odometry | Battery State | RC State | Access Control | Assisted Mode | Light Control | Motion Reset |
+| --------------- | ------------ | ------------ | -------------- | -------- | ------------- | -------- | -------------- | ------------- | ------------- | ------------ |
+| Scout V2        | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Scout Mini      | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Scout Mini Omni | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Ranger Mini V1  | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Ranger Mini V2  | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Tracer          | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Tracer Mini     | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Hunter          | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Hunter SE       | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| Bunker          | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | N            |
+| WR Scout V2     | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | Y            |
+| WR Vbot         | Y            | Y            | Y              | Y        | Y             | Y        | Y              | N             | P             | Y            |
+| RobooterX       | Y            | N            | N              | Y        | Y             | Y        | Y              | N             | N             | N            |
 
 ## Nodes
 
 ### mobile_base_node
-| Published Topic     | Type                              | Description                         |
-| ------------------- | --------------------------------- | ----------------------------------- |
-| `~/system_state`    | wrp_sdk_msgs::msg::SystemState        | Outputs robot's system state        |
-| `~/motion_state`    | wrp_sdk_msgs::msg::MotionState        | Outputs robot's motion state        |
-| `~/actuator_state`  | wrp_sdk_msgs::msg::ActuatorStateArray | Outputs robot's actuator states     |
-| `~/odom`            | nav_msgs::msg::Odometry           | Outputs robot's wheel odometry      |
-| `~/battery_state`   | sensor_msgs::msg::BatteryState    | Outputs robot's battery state       |
-| `~/ultrasonic_data` | wrp_sdk_msgs::msg::RangeData          | Outputs robot's ultrasonic readings |
-| `~/tof_data`        | wrp_sdk_msgs::msg::RangeData          | Outputs robot's tof readings        |
+| Published Topic    | Type                                  | Description                              |
+| ------------------ | ------------------------------------- | ---------------------------------------- |
+| `~/system_state`   | wrp_sdk_msgs::msg::SystemState        | Outputs robot's system state             |
+| `~/motion_state`   | wrp_sdk_msgs::msg::MotionState        | Outputs robot's motion state             |
+| `~/actuator_state` | wrp_sdk_msgs::msg::ActuatorStateArray | Outputs robot's actuator states          |
+| `~/odom`           | nav_msgs::msg::Odometry               | Outputs robot's wheel odometry           |
+| `~/battery_state`  | sensor_msgs::msg::BatteryState        | Outputs robot's battery state            |
+| `~/rc_state`       | wrp_sdk_msgs::msg::RcState            | Outputs robot's rc state (if applicable) |
 
 | Subscribed Topic | Type                      | Description              |
 | ---------------- | ------------------------- | ------------------------ |
 | `/cmd_vel`       | geometry_msgs::msg::Twist | Control robot's movement |
 
-| Service                   | Type                               | Description                             |
-| ------------------------- | ---------------------------------- | --------------------------------------- |
+| Service                   | Type                                   | Description                             |
+| ------------------------- | -------------------------------------- | --------------------------------------- |
 | `~/access_control`        | wrp_sdk_msgs::srv::AccessControl       | (Re)Gain or Renounce control token      |
 | `~/assisted_mode_control` | wrp_sdk_msgs::srv::AssistedModeControl | (En/Dis)able Assisted mode              |
 | `~/light_control`         | wrp_sdk_msgs::srv::LightControl        | Control robot's lights                  |
 | `~/motion_reset`          | wrp_sdk_msgs::srv::MotionReset         | Reset wheel position or odometry values |
 
-| Parameter        | Type | Description                                                                                         |
-| ---------------- | ---- | --------------------------------------------------------------------------------------------------- |
-| `robot_type`     | str  | Robot base type.<br/>Default: "weston"<br/>Supported: "weston", "agilex"                            |
-| `can_device`     | str  | Robot's CAN port.<br/>Default: "can0"                                                               |
-| `base_frame`     | str  | Base frame id.<br/>Default: "base_link"<br/>                                                        |
-| `odom_frame`     | str  | Wheel odometry frame id (when publishing odometry).<br />Default: "odom"                            |
-| `auto_reconnect` | bool | Automatically attempt to gain control token.<br />Default: true                                     |
-| `publish_odom`   | bool | If node should publish wheel odometry.<br />Default: true                                           |
-| `motion_type`    | str  | Robot's motion type. <br/>Default: "skid_steer"<br/>Supported: "skid_steer", "omni", "differential" |
+| Parameter        | Type | Description                                                                                             |
+| ---------------- | ---- | ------------------------------------------------------------------------------------------------------- |
+| `robot_type`     | int  | Robot base type.<br/>Default: "0"<br/>Supported: Check [platform support table above](#robot-platforms) |
+| `can_device`     | str  | Robot's CAN port.<br/>Default: "can0"                                                                   |
+| `base_frame`     | str  | Base frame id.<br/>Default: "base_link"<br/>                                                            |
+| `odom_frame`     | str  | Wheel odometry frame id (when publishing odometry).<br />Default: "odom"                                |
+| `auto_reconnect` | bool | Automatically attempt to gain control token.<br />Default: true                                         |
+| `publish_odom`   | bool | If node should publish wheel odometry.<br />Default: true                                               |

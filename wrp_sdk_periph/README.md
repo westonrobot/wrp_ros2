@@ -4,25 +4,35 @@
 
 ROS2 wrappers around wrp_sdk peripheral drivers.
 
+## Support
+
+### Peripherals
+| Peripheral           | Manufacturer | Interface | (Baud/Bit)rate | Node                                                |
+| -------------------- | ------------ | --------- | -------------- | --------------------------------------------------- |
+| Power Regulator V2.1 | Weston Robot | CAN       | 500k           | [power\_regulator\_node](#power_regulator_node)     |
+| Ultrasonic Sensor    | Variable     | UART      | -              | [ultrasonic\_sensor\_node](#ultrasonic_sensor_node) |
+| IMU Sensor           | Variable     | UART      | -              | [imu\_sensor\_node](#imu_sensor_node)               |
+| GPS Receiver         | Variable     | UART      | -              | [gps\_receiver\_node](#gps_receiver_node)           |
+
 ## Nodes
 
 ### imu_sensor_node
 | Published Topic | Type                  | Description                  |
 | --------------- | --------------------- | ---------------------------- |
-| `/imu`          | sensor_msgs::msg::Imu | Outputs the IMU Sensor data. |
+| `~/imu`         | sensor_msgs::msg::Imu | Outputs the IMU Sensor data. |
 
-| Parameter     | Type | Description                                                                                 |
-| ------------- | ---- | ------------------------------------------------------------------------------------------- |
-| `sensor_model` | str  | IMU sensor model.<br />Default: "wit"<br />Supported: "wit", "hipnuc" |
-| `device_path` | str  | Path to sensor port.<br />Default: "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"<br /> |
-| `baud_rate`   | int  | Sensor's communication baud rate.<br />Default: "115200"                                    |
-| `frame_id`    | str  | Frame id used in /imu_sensor/imu's header.<br />Default: "imu_link"                         |
+| Parameter      | Type | Description                                                                                 |
+| -------------- | ---- | ------------------------------------------------------------------------------------------- |
+| `sensor_model` | str  | IMU sensor model.<br />Default: "wit"<br />Supported: "wit", "hipnuc"                       |
+| `device_path`  | str  | Path to sensor port.<br />Default: "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"<br /> |
+| `baud_rate`    | int  | Sensor's communication baud rate.<br />Default: "115200"                                    |
+| `frame_id`     | str  | Frame id used in /imu_sensor/imu's header.<br />Default: "imu_link"                         |
 
 
 ### gps_receiver_node
 | Published Topic | Type                        | Description                                |
 | --------------- | --------------------------- | ------------------------------------------ |
-| `/fix`          | sensor_msgs::msg::NavSatFix | Outputs the navigation satellite fix data. |
+| `~/fix`         | sensor_msgs::msg::NavSatFix | Outputs the navigation satellite fix data. |
 
 | Parameter     | Type | Description                                                                                                             |
 | ------------- | ---- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -31,9 +41,9 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `frame_id`    | str  | Frame id used in /gps_receiver/navsat_fix's header.<br />Default: "gps_link"                                            |
 
 ### ultrasonic_sensor_node
-| Published Topic      | Type                    | Description                         |
-| -------------------- | ----------------------- | ----------------------------------- |
-| `/<topic_name><num>` | sensor_msgs::msg::Range | Outputs the ultrasonic sensor data. |
+| Published Topic       | Type                    | Description                         |
+| --------------------- | ----------------------- | ----------------------------------- |
+| `~/<topic_name><num>` | sensor_msgs::msg::Range | Outputs the ultrasonic sensor data. |
 
 | Parameter      | Type | Description                                                                                   |
 | -------------- | ---- | --------------------------------------------------------------------------------------------- |
@@ -44,13 +54,13 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | `topic_name`   | str  | Topic name prefix used to publish data <br />Default: "ultrasonic"                            |
 
 ### power_regulator_node
-| Published Topic | Type                                     | Description                               |
-| --------------- | ---------------------------------------- | ----------------------------------------- |
-| `/state`        | wrp_sdk_msgs::msg::PowerRegulatorDeviceState | Outputs the power regulator device state. |
+| Published Topic | Type                                         | Description                               |
+| --------------- | -------------------------------------------- | ----------------------------------------- |
+| `~/state`       | wrp_sdk_msgs::msg::PowerRegulatorDeviceState | Outputs the power regulator device state. |
 
-| Service | Type                                 | Description                               |
-| ------- | ------------------------------------ | ----------------------------------------- |
-| `/cmd`  | wrp_sdk_msgs::srv::PowerRegulatorControl | (Dis)able power regulator output channels |
+| Service | Type                                     | Description                               |
+| ------- | ---------------------------------------- | ----------------------------------------- |
+| `~/cmd` | wrp_sdk_msgs::srv::PowerRegulatorControl | (Dis)able power regulator output channels |
 
 | Parameter     | Type | Description                                       |
 | ------------- | ---- | ------------------------------------------------- |

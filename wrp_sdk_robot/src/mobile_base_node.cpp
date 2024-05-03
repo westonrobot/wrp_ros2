@@ -1,8 +1,8 @@
 /**
  * @file mobile_base_node.cpp
- * @brief 
+ * @brief
  * @date 03-05-2024
- * 
+ *
  * @copyright Copyright (c) 2024 Weston Robot Pte. Ltd.
  */
 #include "wrp_sdk_robot/mobile_base_node.hpp"
@@ -132,15 +132,19 @@ bool MobileBaseNode::SetupInterfaces() {
 
   // setup publishers
   system_state_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::SystemState>("~/system_state", 10);
+      this->create_publisher<wrp_sdk_msgs::msg::SystemState>("~/system_state",
+                                                             10);
   motion_state_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::MotionState>("~/motion_state", 10);
+      this->create_publisher<wrp_sdk_msgs::msg::MotionState>("~/motion_state",
+                                                             10);
   actuator_state_publisher_ =
       this->create_publisher<wrp_sdk_msgs::msg::ActuatorStateArray>(
           "~/actuator_state", 10);
   battery_state_publisher_ =
       this->create_publisher<sensor_msgs::msg::BatteryState>("~/battery_state",
                                                              10);
+  rc_state_publisher_ =
+      this->create_publisher<wrp_sdk_msgs::msg::RcState>("~/rc_state", 10);
 
   if (publish_odom_tf_) {
     // setup tf broadcaster
@@ -150,23 +154,26 @@ bool MobileBaseNode::SetupInterfaces() {
         this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
   }
   ultrasonic_data_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>("~/ultrasonic_data",
-                                                            10);
+      this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>(
+          "~/ultrasonic_data", 10);
   tof_data_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>("~/tof_data", 10);
+      this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>("~/tof_data",
+                                                                10);
 
   // setup services
-  access_control_service_ = this->create_service<wrp_sdk_msgs::srv::AccessControl>(
-      "~/access_control",
-      std::bind(&MobileBaseNode::AccessControlCallback, this, _1, _2));
+  access_control_service_ =
+      this->create_service<wrp_sdk_msgs::srv::AccessControl>(
+          "~/access_control",
+          std::bind(&MobileBaseNode::AccessControlCallback, this, _1, _2));
   assisted_mode_control_service_ =
       this->create_service<wrp_sdk_msgs::srv::AssistedModeControl>(
           "~/assisted_mode_control",
           std::bind(&MobileBaseNode::AssistedModeControlCallback, this, _1,
                     _2));
-  light_control_service_ = this->create_service<wrp_sdk_msgs::srv::LightControl>(
-      "~/light_control",
-      std::bind(&MobileBaseNode::LightControlCallback, this, _1, _2));
+  light_control_service_ =
+      this->create_service<wrp_sdk_msgs::srv::LightControl>(
+          "~/light_control",
+          std::bind(&MobileBaseNode::LightControlCallback, this, _1, _2));
   motion_reset_service_ = this->create_service<wrp_sdk_msgs::srv::MotionReset>(
       "~/motion_reset",
       std::bind(&MobileBaseNode::MotionResetCallback, this, _1, _2));
@@ -200,12 +207,14 @@ void MobileBaseNode::AccessControlCallback(
     wrp_sdk_msgs::srv::AccessControl::Response::SharedPtr response) {
   HandshakeReturnCode result;
   switch (request->action_type) {
-    case wrp_sdk_msgs::srv::AccessControl::Request::ACTION_TYPE_REQUEST_CONTROL: {
+    case wrp_sdk_msgs::srv::AccessControl::Request::
+        ACTION_TYPE_REQUEST_CONTROL: {
       result = robot_->RequestControl();
       response->result_code = static_cast<uint32_t>(result);
       break;
     }
-    case wrp_sdk_msgs::srv::AccessControl::Request::ACTION_TYPE_RENOUNCE_CONTROL: {
+    case wrp_sdk_msgs::srv::AccessControl::Request::
+        ACTION_TYPE_RENOUNCE_CONTROL: {
       result = robot_->RenounceControl();
       response->result_code = static_cast<uint32_t>(result);
       break;
@@ -281,9 +290,6 @@ void MobileBaseNode::PublishLoopCallback() {
   PublishActuatorState();
   PublishOdometry();
   PublishRcState();
-  PublishLightState();
-
-  PublishSensorData();
 
   if (publish_odom_tf_) {
     PublishOdometry();
@@ -293,7 +299,6 @@ void MobileBaseNode::PublishLoopCallback() {
 void MobileBaseNode::PublishSystemState() {
   auto system_state = robot_->GetSystemState();
   auto motion_state = robot_->GetMotionState();
-  auto actuator_state = robot_->GetActuatorState();
 
   // system state
   wrp_sdk_msgs::msg::SystemState system_state_msg;
@@ -366,7 +371,23 @@ void MobileBaseNode::PublishActuatorState() {
   actuator_state_publisher_->publish(actuator_state_msg);
 }
 
+void MobileBaseNode::PublishRcState() {
+  auto rc_state = robot_->GetRcState();
 
+  wrp_sdk_msgs::msg::RcState rc_state_msg;
+  rc_state_msg.header.stamp = this->now();
+  rc_state_msg.header.frame_id = base_frame_;
+
+  for (size_t i = 0; i < 8; i++) {
+    rc_state_msg.axes[i] = rc_state.axes[i];
+  }
+
+  for (size_t i = 0; i < 8; i++) {
+    rc_state_msg.buttons[i] = rc_state.buttons[i];
+  }
+
+  rc_state_publisher_->publish(rc_state_msg);
+}
 
 void MobileBaseNode::PublishOdometry() {
   // TODO calculate odometry according to robot type
@@ -440,41 +461,6 @@ nav_msgs::msg::Odometry MobileBaseNode::CalculateOdometry(
   odom_msg.twist.twist.angular.z = angular_speed;
 
   return odom_msg;
-}
-
-void MobileBaseNode::PublishSensorData() {
-  // TODO: bumper publishing?
-  auto ultrasonic_data = robot_->GetUltrasonicData();
-  auto tof_data = robot_->GetTofData();
-
-  // ultrasonic data
-  wrp_sdk_msgs::msg::RangeDataArray ultrasonic_data_msg;
-  ultrasonic_data_msg.type =
-      wrp_sdk_msgs::msg::RangeDataArray::RANGE_SENSOR_TYPE_ULTRASONIC;
-  for (size_t i = 0; i < ultrasonic_data.size(); i++) {
-    wrp_sdk_msgs::msg::RangeData range_data;
-    range_data.id = i;
-    range_data.field_of_view = ultrasonic_data[i].field_of_view;
-    range_data.min_range = ultrasonic_data[i].min_range;
-    range_data.max_range = ultrasonic_data[i].max_range;
-    range_data.range = ultrasonic_data[i].range;
-    ultrasonic_data_msg.data.push_back(range_data);
-  }
-  ultrasonic_data_publisher_->publish(ultrasonic_data_msg);
-
-  // tof data
-  wrp_sdk_msgs::msg::RangeDataArray tof_data_msg;
-  tof_data_msg.type = wrp_sdk_msgs::msg::RangeDataArray::RANGE_SENSOR_TYPE_TOF;
-  for (size_t i = 0; i < tof_data.size(); i++) {
-    wrp_sdk_msgs::msg::RangeData range_data;
-    range_data.id = i;
-    range_data.field_of_view = tof_data[i].field_of_view;
-    range_data.min_range = tof_data[i].min_range;
-    range_data.max_range = tof_data[i].max_range;
-    range_data.range = tof_data[i].range;
-    tof_data_msg.data.push_back(range_data);
-  }
-  tof_data_publisher_->publish(tof_data_msg);
 }
 
 geometry_msgs::msg::Quaternion MobileBaseNode::CreateQuaternionMsgFromYaw(
