@@ -16,7 +16,7 @@ def generate_launch_description():
     )
 
     node = Node(
-        package="wrp_ros2",
+        package="wrp_sdk_periph",
         name="power_regulator_node",
         executable="power_regulator_node",
         output="screen",

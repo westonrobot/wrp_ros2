@@ -1,5 +1,0 @@
-imu_sensor_node:
-  ros__parameters:
-    device_path: "/dev/ttyUSB0" # Path to receiver port
-    baud_rate: 115200 # baud rate
-    frame_id: "imu"

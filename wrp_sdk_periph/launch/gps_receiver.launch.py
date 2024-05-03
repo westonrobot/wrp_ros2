@@ -26,7 +26,7 @@ def generate_launch_description():
     )
 
     node = Node(
-        package="wrp_ros2",
+        package="wrp_sdk_periph",
         name="gps_receiver_node",
         executable="gps_receiver_node",
         output="screen",

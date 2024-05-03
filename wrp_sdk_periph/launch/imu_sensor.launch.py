@@ -31,7 +31,7 @@ def generate_launch_description():
     )
 
     node = Node(
-        package="wrp_ros2",
+        package="wrp_sdk_periph",
         name="imu_sensor_node",
         executable="imu_sensor_node",
         output="screen",

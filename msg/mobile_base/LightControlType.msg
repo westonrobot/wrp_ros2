@@ -1,8 +1,0 @@
-uint32 LIGHT_MODE_BREATH = 0
-uint32 LIGHT_MODE_CONST_OFF = 1
-uint32 LIGHT_MODE_CONST_ON = 2
-uint32 LIGHT_MODE_CUSTOM = 3
-uint32 LIGHT_MODE_ENQUIRY = 4
-
-uint32 mode
-uint32 intensity

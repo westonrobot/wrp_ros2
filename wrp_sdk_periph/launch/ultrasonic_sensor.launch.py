@@ -36,7 +36,7 @@ def generate_launch_description():
     )
 
     node = Node(
-        package="wrp_ros2",
+        package="wrp_sdk_periph",
         name="ultrasonic_sensor_node",
         executable="ultrasonic_sensor_node",
         output="screen",
