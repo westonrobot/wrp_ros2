@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.8)
 project(wrp_sdk_robot)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic -fno-gnu-unique)
+
+  # -fno-gnu-unique is a hotfix for when compiling on humble
 endif()
 
 # find dependencies

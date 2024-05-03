@@ -3,6 +3,8 @@ project(wrp_sdk_periph)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -fno-gnu-unique)
+
+  # -fno-gnu-unique is a hotfix for when compiling on humble
 endif()
 
 list(APPEND CMAKE_PREFIX_PATH "/opt/weston_robot/lib/cmake")
