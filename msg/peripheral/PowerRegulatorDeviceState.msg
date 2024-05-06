@@ -1,4 +1,0 @@
-float32 input_voltage
-float32 fan_speed
-float32 temperature
-PowerRegulatorChannelState[4] channels
