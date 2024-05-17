@@ -37,6 +37,9 @@ jobs:
         with:
           submodules: recursive
           path: "colcon_ws/src/"
+      - name: Install boost
+        run: |
+          apt-get update && apt-get -y install libboost-all-dev
       - name: Install latest stable wrp_sdk
         run: |
           sudo apt-get update
