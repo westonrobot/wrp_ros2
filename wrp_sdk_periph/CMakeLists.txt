@@ -58,6 +58,21 @@ ament_target_dependencies(gps_receiver_node
   sensor_msgs
 )
 
+add_executable(ultrasonic_sensor_node
+  "src/ultrasonic_sensor_node.cpp"
+)
+target_link_libraries(ultrasonic_sensor_node
+  westonrobot::wrp_sdk_peripheral
+)
+target_include_directories(ultrasonic_sensor_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(ultrasonic_sensor_node
+  rclcpp
+  sensor_msgs
+)
+
 add_executable(lift_controller_node
   "src/lift_controller_node.cpp"
 )
@@ -75,24 +90,10 @@ ament_target_dependencies(lift_controller_node
   rclcpp_action
 )
 
-
-add_executable(ultrasonic_sensor_node
-  "src/ultrasonic_sensor_node.cpp"
-)
-target_link_libraries(ultrasonic_sensor_node
-  westonrobot::wrp_sdk_peripheral
-)
-target_include_directories(ultrasonic_sensor_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-ament_target_dependencies(ultrasonic_sensor_node
-  rclcpp
-  sensor_msgs
-)
 install(TARGETS
   gps_receiver_node
   ultrasonic_sensor_node
+  lift_controller_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}

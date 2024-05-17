@@ -67,7 +67,7 @@ bool LiftControllerNode::SetupInterfaces() {
   using namespace std::placeholders;
 
   lift_state_pub_ = this->create_publisher<wrp_sdk_msgs::msg::LiftState>(
-      "~/lift_status", rclcpp::SensorDataQoS());
+      "~/lift_state", rclcpp::SensorDataQoS());
 
   lift_query_srv_ = this->create_service<wrp_sdk_msgs::srv::LiftQuery>(
       "~/lift_query",

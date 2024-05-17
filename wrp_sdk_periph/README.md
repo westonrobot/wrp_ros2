@@ -13,6 +13,7 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | Ultrasonic Sensor    | Variable     | UART      | -              | [ultrasonic\_sensor\_node](#ultrasonic_sensor_node) |
 | IMU Sensor           | Variable     | UART      | -              | [imu\_sensor\_node](#imu_sensor_node)               |
 | GPS Receiver         | Variable     | UART      | -              | [gps\_receiver\_node](#gps_receiver_node)           |
+| Lift Controller      | Weston Robot | UART      | -              | [lift\_controller\_node](#lift_controller_node)     |
 
 ## Nodes
 
@@ -65,3 +66,25 @@ ROS2 wrappers around wrp_sdk peripheral drivers.
 | Parameter     | Type | Description                                       |
 | ------------- | ---- | ------------------------------------------------- |
 | `device_path` | str  | Path to receiver port.<br />Default: "can0"<br /> |
+
+### lift_controller_node
+| Published Topic | Type                         | Description                                                                                          |
+| --------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `~/lift_state`  | wrp_sdk_msgs::msg::LiftState | Outputs the states of the lifts attached to the controller <br> Please check the id of the messages. |
+
+| Service        | Type                         | Description                                                    |
+| -------------- | ---------------------------- | -------------------------------------------------------------- |
+| `~/lift_query` | wrp_sdk_msgs::srv::LiftQuery | Gets the state of the specific lift attached to the controller |
+
+| Action           | Type                              | Description                                                               |
+| ---------------- | --------------------------------- | ------------------------------------------------------------------------- |
+| `~/lift_control` | wrp_sdk_msgs::action::LiftControl | Commands a lift attached to the controller to move to a specific position |
+
+| Parameter       | Type   | Description                                                          |
+| --------------- | ------ | -------------------------------------------------------------------- |
+| `device_path`   | str    | Path to receiver port.<br />Default: "/dev/ttyUSB0"<br />            |
+| `baud_rate`     | int    | Sensor's communication baud rate.<br />Default: "115200"             |
+| `sampling_freq` | double | Sampling frequency of the lift controller (hz). <br /> Default: 10.0 |
+
+#### Notes
+- The lift controller node is a work in progress and speed control is not yet implemented. (speed variables are ignored)
