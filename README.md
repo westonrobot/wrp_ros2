@@ -15,7 +15,7 @@ This package contains a minimal wrapper around wrp_sdk and provides a ROS2 inter
 **Supported Robots**:
 
 * Refer to [mobile_base](./wrp_sdk_robot/README.md) for more details.
-* 
+
 **Supported Peripherals**:
 
 * Power Regulator V2.1
@@ -38,12 +38,12 @@ More details can be found in the README inside individual src sub-folders
 ### Build the package
 
 * Clone the packages into a colcon workspace and compile/source.  
-(the following instructions assume your catkin workspace is at: ~/ros2_ws/src)
+(the following instructions assume your colcon workspace is at: ~/ros2_ws/src)
 
     ```bash
     mkdir -p ~/ros2_ws/src
     cd ~/ros2_ws/src
-    git clone https://gitlab.com/westonrobot/ros2/wrp_ros2.git
+    git clone https://github.com/westonrobot/wrp_ros2.git
     cd ..
     colcon build --symlink-install
     . install/setup.bash
