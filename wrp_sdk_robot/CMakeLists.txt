@@ -7,6 +7,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # -fno-gnu-unique is a hotfix for when compiling on humble
 endif()
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/weston_robot/lib/cmake")
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)

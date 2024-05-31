@@ -22,6 +22,7 @@ This package contains a minimal wrapper around wrp_sdk and provides a ROS2 inter
 * Ultrasonic Sensor
 * Hipnuc and WitMotion IMU
 * NMEA-compatible GPS Receiver
+* Lift Controller
 
 More details can be found in the README inside individual src sub-folders
 
@@ -32,7 +33,7 @@ More details can be found in the README inside individual src sub-folders
 
 ### Install dependencies
 
-* wrp_sdk >= v1.3.0: please follow setup instructions from [here](https://github.com/westonrobot/wrp_sdk/)
+* wrp_sdk >= **v1.3.0**: please follow setup instructions from [here](https://github.com/westonrobot/wrp_sdk/)
 
 ### Build the package
 
@@ -49,6 +50,7 @@ More details can be found in the README inside individual src sub-folders
     ```
 
 ## Setup CAN-To-USB adapter
+**Only needed if you are using a CAN robot or peripheral**
  
 1. Enable gs_usb kernel module
     ```

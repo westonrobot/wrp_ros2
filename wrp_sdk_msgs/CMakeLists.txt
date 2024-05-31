@@ -32,6 +32,7 @@ set(message_files
   # peripheral
   "msg/peripheral/PowerRegulatorChannelState.msg"
   "msg/peripheral/PowerRegulatorDeviceState.msg"
+  "msg/peripheral/LiftState.msg"
 )
 
 set(service_files
@@ -44,17 +45,23 @@ set(service_files
 
   # peripheral
   "srv/peripheral/PowerRegulatorControl.srv"
+  "srv/peripheral/LiftQuery.srv"
+)
+
+set(action_files
+
+  # peripheral
+  "action/peripheral/LiftControl.action"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-${message_files} ${service_files} ${action_files}  
+  ${message_files} ${service_files} ${action_files}
   DEPENDENCIES
-    std_msgs
-    action_msgs
-    sensor_msgs
-    geometry_msgs
-    nav_msgs)
-
+  std_msgs
+  action_msgs
+  sensor_msgs
+  geometry_msgs
+  nav_msgs)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
