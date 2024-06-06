@@ -1,6 +1,6 @@
 # wrp_ros2
 
-## About
+## About 
 
 This package contains a minimal wrapper around wrp_sdk and provides a ROS2 interface to hardware platforms from Weston Robot. Please first check if your device and environment are supported by the SDK and this ROS package before proceeding:
 
