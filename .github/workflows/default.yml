@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        container: ["westonrobot/ros:foxy-ci", "westonrobot/ros:humble-ci-latest"]
+        container: ["westonrobot/ros:humble-ci-latest"]
         runner: ["ubuntu-latest"]
     runs-on: ubuntu-latest
     container:
@@ -22,7 +22,6 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses:  westonrobot-dev/action-cleanup@master
       - name: Upgrade git if on Ubuntu 18.04
         if: |
           contains(matrix.container, 'bionic') || contains(matrix.container, 'zephyr') || contains(matrix.container, 'melodic')
@@ -34,15 +33,23 @@ jobs:
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/colcon_ws/src
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          ssh-key: ${{ secrets.GIT_REPO_SSH_KEY }}
           submodules: recursive
           path: "colcon_ws/src/"
-      - name: Install latest wrp_sdk
+      - name: Install boost
         run: |
-          echo "deb https://westonrobot.jfrog.io/artifactory/wrtoolbox-release $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/weston-robot.list
-          curl -sSL 'https://westonrobot.jfrog.io/artifactory/api/security/keypair/wr-deb/public' | apt-key add -
+          apt-get update && apt-get -y install libboost-all-dev
+      - name: Install latest stable wrp_sdk
+        run: |
+          sudo apt-get update
+          sudo install -m 0755 -d /etc/apt/keyrings
+          curl -fsSL http://deb.westonrobot.net/signing.key | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/weston-robot.gpg
+          sudo chmod a+r /etc/apt/keyrings/weston-robot.gpg
+          echo \
+              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/weston-robot.gpg] http://deb.westonrobot.net/$(lsb_release -cs) $(lsb_release -cs) main" | \
+              sudo tee /etc/apt/sources.list.d/weston-robot.list > /dev/null
+          sudo apt-get update
           apt-get update && apt-get -y install wrp-sdk
       - name: Install latest lely-can
         run: |
