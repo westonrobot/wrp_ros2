@@ -19,8 +19,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 
 # wr packages
-find_package(wrp_sdk 1.3 REQUIRED)
 find_package(wrp_sdk_msgs REQUIRED)
+find_package(wrp_sdk 1.3.0...<1.5.0 REQUIRED)
 
 # Attempt to find lelycan libraries for peripheral nodes
 find_package(PkgConfig REQUIRED)
