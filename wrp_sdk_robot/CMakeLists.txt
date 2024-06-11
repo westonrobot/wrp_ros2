@@ -23,7 +23,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 
 # wr packages
 find_package(wrp_sdk_msgs REQUIRED)
-find_package(wrp_sdk 1.3.0...<1.5.0 REQUIRED)
+find_package(wrp_sdk 1.3.0...<1.5 REQUIRED)
 
 add_executable(mobile_base_node
   src/mobile_base_node.cpp
