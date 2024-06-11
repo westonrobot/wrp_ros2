@@ -10,8 +10,6 @@ def generate_launch_description():
         "use_sim_time", default_value="false",
         description='Use simulation clock if true')
 
-    # "weston" == weston robot base
-    # "agilex" == agilexV2 robot base
     robot_type_launch_arg = DeclareLaunchArgument(
         "robot_type", default_value="0",
         description="Mobile base robot type, Refer to README.md for more details."
