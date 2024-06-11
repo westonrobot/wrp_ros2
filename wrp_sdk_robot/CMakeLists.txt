@@ -25,16 +25,16 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(wrp_sdk_msgs REQUIRED)
 find_package(wrp_sdk 1.3 REQUIRED)
 
-add_executable(mobile_robot_base_node
+add_executable(mobile_base_node
   src/mobile_base_node.cpp
 )
-target_link_libraries(mobile_robot_base_node
+target_link_libraries(mobile_base_node
   westonrobot::wrp_sdk_robot
 )
-target_include_directories(mobile_robot_base_node PUBLIC
+target_include_directories(mobile_base_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-ament_target_dependencies(mobile_robot_base_node
+ament_target_dependencies(mobile_base_node
   rclcpp
   rclcpp_components
   wrp_sdk_msgs
@@ -47,7 +47,7 @@ ament_target_dependencies(mobile_robot_base_node
 )
 
 install(TARGETS
-  mobile_robot_base_node
+  mobile_base_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
