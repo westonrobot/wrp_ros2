@@ -56,7 +56,7 @@ Legend: Y - Supported, N - Not Supported, P - Partially Supported
 | `~/actuator_state` | wrp_sdk_msgs::msg::ActuatorStateArray | Outputs robot's actuator states          |
 | `~/odom`           | nav_msgs::msg::Odometry               | Outputs robot's wheel odometry           |
 | `~/battery_state`  | sensor_msgs::msg::BatteryState        | Outputs robot's battery state            |
-| `~/rc_state`       | wrp_sdk_msgs::msg::RcState            | Outputs robot's rc state (if applicable) |
+| `~/rc_state`       | sensor_msgs::msg::Joy            | Outputs robot's rc state (if applicable) |
 
 | Subscribed Topic | Type                      | Description              |
 | ---------------- | ------------------------- | ------------------------ |

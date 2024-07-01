@@ -21,14 +21,12 @@
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 #include "wrp_sdk_msgs/msg/system_state.hpp"
 #include "wrp_sdk_msgs/msg/motion_state.hpp"
 #include "wrp_sdk_msgs/msg/actuator_state_array.hpp"
 #include "wrp_sdk_msgs/msg/actuator_state.hpp"
-#include "wrp_sdk_msgs/msg/range_data.hpp"
-#include "wrp_sdk_msgs/msg/range_data_array.hpp"
 #include "wrp_sdk_msgs/msg/motion_command.hpp"
-#include "wrp_sdk_msgs/msg/rc_state.hpp"
 
 #include "wrp_sdk_msgs/srv/access_control.hpp"
 #include "wrp_sdk_msgs/srv/assisted_mode_control.hpp"
@@ -94,13 +92,9 @@ class MobileBaseNode : public rclcpp::Node {
       actuator_state_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr
       battery_state_publisher_;
-  rclcpp::Publisher<wrp_sdk_msgs::msg::RcState>::SharedPtr rc_state_publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::Joy>::SharedPtr rc_state_publisher_;
 
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
-  rclcpp::Publisher<wrp_sdk_msgs::msg::RangeDataArray>::SharedPtr
-      tof_data_publisher_;
-  rclcpp::Publisher<wrp_sdk_msgs::msg::RangeDataArray>::SharedPtr
-      ultrasonic_data_publisher_;
 
   rclcpp::Service<wrp_sdk_msgs::srv::AccessControl>::SharedPtr
       access_control_service_;
