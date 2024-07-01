@@ -27,7 +27,6 @@
 #include "wrp_sdk_msgs/msg/actuator_state_array.hpp"
 #include "wrp_sdk_msgs/msg/actuator_state.hpp"
 #include "wrp_sdk_msgs/msg/motion_command.hpp"
-#include "wrp_sdk_msgs/msg/rc_state.hpp"
 
 #include "wrp_sdk_msgs/srv/access_control.hpp"
 #include "wrp_sdk_msgs/srv/assisted_mode_control.hpp"
