@@ -145,7 +145,7 @@ bool MobileBaseNode::SetupInterfaces() {
       this->create_publisher<sensor_msgs::msg::BatteryState>("~/battery_state",
                                                              10);
   rc_state_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::RcState>("~/rc_state", 10);
+      this->create_publisher<sensor_msgs::msg::Joy>("~/rc_state", 10);
   odom_publisher_ =
       this->create_publisher<nav_msgs::msg::Odometry>("~/odom", 50);
 
@@ -153,7 +153,7 @@ bool MobileBaseNode::SetupInterfaces() {
     // setup tf broadcaster
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
   }
-  
+
   // setup services
   access_control_service_ =
       this->create_service<wrp_sdk_msgs::srv::AccessControl>(
@@ -369,16 +369,16 @@ void MobileBaseNode::PublishActuatorState() {
 void MobileBaseNode::PublishRcState() {
   auto rc_state = robot_->GetRcState();
 
-  wrp_sdk_msgs::msg::RcState rc_state_msg;
+  sensor_msgs::msg::Joy rc_state_msg;
   rc_state_msg.header.stamp = this->now();
   rc_state_msg.header.frame_id = base_frame_;
 
   for (size_t i = 0; i < 8; i++) {
-    rc_state_msg.axes[i] = rc_state.axes[i];
+    rc_state_msg.axes.push_back(rc_state.axes[i]);
   }
 
   for (size_t i = 0; i < 8; i++) {
-    rc_state_msg.buttons[i] = rc_state.buttons[i];
+    rc_state_msg.buttons.push_back(rc_state.buttons[i]);
   }
 
   rc_state_publisher_->publish(rc_state_msg);

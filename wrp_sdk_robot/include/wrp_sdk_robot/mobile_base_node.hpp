@@ -21,6 +21,7 @@
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 #include "wrp_sdk_msgs/msg/system_state.hpp"
 #include "wrp_sdk_msgs/msg/motion_state.hpp"
 #include "wrp_sdk_msgs/msg/actuator_state_array.hpp"
@@ -92,7 +93,7 @@ class MobileBaseNode : public rclcpp::Node {
       actuator_state_publisher_;
   rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr
       battery_state_publisher_;
-  rclcpp::Publisher<wrp_sdk_msgs::msg::RcState>::SharedPtr rc_state_publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::Joy>::SharedPtr rc_state_publisher_;
 
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
 
