@@ -153,13 +153,7 @@ bool MobileBaseNode::SetupInterfaces() {
     // setup tf broadcaster
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
   }
-  ultrasonic_data_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>(
-          "~/ultrasonic_data", 10);
-  tof_data_publisher_ =
-      this->create_publisher<wrp_sdk_msgs::msg::RangeDataArray>("~/tof_data",
-                                                                10);
-
+  
   // setup services
   access_control_service_ =
       this->create_service<wrp_sdk_msgs::srv::AccessControl>(

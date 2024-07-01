@@ -25,8 +25,6 @@
 #include "wrp_sdk_msgs/msg/motion_state.hpp"
 #include "wrp_sdk_msgs/msg/actuator_state_array.hpp"
 #include "wrp_sdk_msgs/msg/actuator_state.hpp"
-#include "wrp_sdk_msgs/msg/range_data.hpp"
-#include "wrp_sdk_msgs/msg/range_data_array.hpp"
 #include "wrp_sdk_msgs/msg/motion_command.hpp"
 #include "wrp_sdk_msgs/msg/rc_state.hpp"
 
@@ -97,10 +95,6 @@ class MobileBaseNode : public rclcpp::Node {
   rclcpp::Publisher<wrp_sdk_msgs::msg::RcState>::SharedPtr rc_state_publisher_;
 
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
-  rclcpp::Publisher<wrp_sdk_msgs::msg::RangeDataArray>::SharedPtr
-      tof_data_publisher_;
-  rclcpp::Publisher<wrp_sdk_msgs::msg::RangeDataArray>::SharedPtr
-      ultrasonic_data_publisher_;
 
   rclcpp::Service<wrp_sdk_msgs::srv::AccessControl>::SharedPtr
       access_control_service_;
