@@ -26,7 +26,6 @@ set(message_files
   "msg/mobile_base/MotorState.msg"
   "msg/mobile_base/RangeData.msg"
   "msg/mobile_base/RangeDataArray.msg"
-  "msg/mobile_base/RcState.msg"
   "msg/mobile_base/SystemState.msg"
 
   # peripheral
