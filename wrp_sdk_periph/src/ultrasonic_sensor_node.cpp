@@ -87,7 +87,7 @@ bool UltrasonicSensorNode::SetupHardware() {
 bool UltrasonicSensorNode::SetupInterfaces() {
   publishers_.resize(8);
   for (int i = 0; i < 8; ++i) {
-    std::string topic_name = "~/" + topic_name_ + std::to_string(i);
+    std::string topic_name = "~/" + topic_name_ + "_" + std::to_string(i);
     publishers_[i] =
         this->create_publisher<sensor_msgs::msg::Range>(topic_name, 5);
   }
@@ -100,7 +100,7 @@ void UltrasonicSensorNode::PublishCallback(const UltrasonicMsg& imu_msg) {
   ultrasonic_msg.header.stamp = this->now();
 
   for (size_t i = 0; i < imu_msg.size(); ++i) {
-    ultrasonic_msg.header.frame_id = frame_id_ + std::to_string(i);
+    ultrasonic_msg.header.frame_id = frame_id_ + "_" + std::to_string(i);
     ultrasonic_msg.radiation_type = sensor_msgs::msg::Range::ULTRASOUND;
     ultrasonic_msg.field_of_view = imu_msg[i].field_of_view;
     ultrasonic_msg.min_range = imu_msg[i].min_range;
